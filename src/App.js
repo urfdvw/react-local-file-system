@@ -1,10 +1,16 @@
-import "./styles.css";
+import { useEffect, useState } from "react";
 
 export default function App() {
-  return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
-    </div>
-  );
+    const [count, setCount] = useState(0);
+    return (
+        <div className="App">
+            <button
+                onClick={() => {
+                    setCount((cur_count) => cur_count + 1);
+                }}
+            >
+                count: {count}
+            </button>
+        </div>
+    );
 }
