@@ -1,16 +1,29 @@
 import { useState } from "react";
 
 const useFileSystem = () => {
-    const [directoryHandle, setDirectoryHandle] = useState(null);
+    const [rootDirHandle, setRootDirHandle] = useState(null);
     const [directoryReady, setDirectoryReady] = useState(false);
+    const [selectedHandle, setSelectedHandle] = useState(null);
 
     async function openDirectory() {
         try {
-            setDirectoryHandle(await window.showDirectoryPicker());
-            setDirectoryReady(true);
+            const dirHandle = await window.showDirectoryPicker({
+                mode: "readwrite",
+            });
+            if (dirHandle) {
+                console.log("Directory handle opened.");
+                setRootDirHandle(dirHandle);
+                setSelectedHandle(dirHandle);
+                setDirectoryReady(true);
+            } else {
+                throw new Error(
+                    "Failed to open directory handle. `dirHandle` created but empty"
+                ); // not sure wether this is reachiable
+            }
         } catch (error) {
+            alert(error);
+            setDirectoryReady(false);
             console.error(error);
-            return null;
         }
     }
 
@@ -34,7 +47,7 @@ const useFileSystem = () => {
         // split path to levels
         const levels = path.split("/").map((l) => l.trim());
         // get dir handle
-        let curDirectoryHandle = directoryHandle;
+        let curDirectoryHandle = rootDirHandle;
         for (const l of levels.slice(0, -1)) {
             console.log("l", [l]);
             curDirectoryHandle = await curDirectoryHandle.getDirectoryHandle(l);
@@ -89,7 +102,14 @@ const useFileSystem = () => {
         }
     }
 
-    return { openDirectory, directoryReady, readFile, readDir, writeFile };
+    return {
+        openDirectory,
+        selectedHandle,
+        directoryReady,
+        readFile,
+        readDir,
+        writeFile,
+    };
 };
 
 export default useFileSystem;

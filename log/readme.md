@@ -1,7 +1,7 @@
 # Design
 
 Methods
-- open directory
+- open directory (did)
 - get folder tree of the open directory
 - select dir/file
 - add
