@@ -13,7 +13,6 @@ const useFileSystem = () => {
                 }
                 setDirectoryReady(true);
             } catch {
-                console.log("Dir not ready");
                 setDirectoryReady(false);
             }
         }, 1000);
