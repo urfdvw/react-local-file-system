@@ -1,5 +1,7 @@
 # Design
-
+Attribuits
+- directoryReady
+- statusText
 Methods
 - open directory (did)
 - get folder tree of the open directory

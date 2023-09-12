@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 
 const useFileSystem = () => {
     const [rootDirHandle, setRootDirHandle] = useState(null);
-    const [directoryReady, setDirectoryReady] = useState(false);
     const [selectedHandle, setSelectedHandle] = useState(null);
+    const [directoryReady, setDirectoryReady] = useState(false);
+    const [statusText, setStatusText] = useState("");
 
+    // directoryReady
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
                 for await (const [key, value] of rootDirHandle.entries()) {
-                    break
+                    break;
                 }
                 setDirectoryReady(true);
             } catch {
@@ -18,6 +20,22 @@ const useFileSystem = () => {
         }, 1000);
         return () => clearInterval(interval);
     }, [rootDirHandle]);
+
+    // statusText
+    useEffect(() => {
+        setStatusText(() => {
+            if (!directoryReady) {
+                return "No Directory Connected!";
+            } else {
+                const info =
+                    rootDirHandle.name +
+                    " connected, " +
+                    selectedHandle.name +
+                    " selected";
+                return info;
+            }
+        });
+    }, [rootDirHandle, selectedHandle, directoryReady]);
 
     async function openDirectory() {
         try {
@@ -39,6 +57,7 @@ const useFileSystem = () => {
         }
     }
 
+    // not cleaned up yet ---------------------------------------------
     async function fileHandle2text(fileHandle) {
         try {
             const file = await fileHandle.getFile();
@@ -116,11 +135,8 @@ const useFileSystem = () => {
 
     return {
         openDirectory,
-        selectedHandle,
         directoryReady,
-        readFile,
-        readDir,
-        writeFile,
+        statusText,
     };
 };
 
