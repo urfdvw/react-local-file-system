@@ -1,9 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useFileSystem = () => {
     const [rootDirHandle, setRootDirHandle] = useState(null);
     const [directoryReady, setDirectoryReady] = useState(false);
     const [selectedHandle, setSelectedHandle] = useState(null);
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            try {
+                for await (const [key, value] of rootDirHandle.entries()) {
+                    break
+                }
+                setDirectoryReady(true);
+            } catch {
+                console.log("Dir not ready");
+                setDirectoryReady(false);
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [rootDirHandle]);
 
     async function openDirectory() {
         try {
@@ -14,7 +29,6 @@ const useFileSystem = () => {
                 console.log("Directory handle opened.");
                 setRootDirHandle(dirHandle);
                 setSelectedHandle(dirHandle);
-                setDirectoryReady(true);
             } else {
                 throw new Error(
                     "Failed to open directory handle. `dirHandle` created but empty"
@@ -22,7 +36,6 @@ const useFileSystem = () => {
             }
         } catch (error) {
             alert(error);
-            setDirectoryReady(false);
             console.error(error);
         }
     }
