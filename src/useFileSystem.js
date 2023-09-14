@@ -6,6 +6,8 @@ const useFileSystem = () => {
     const [directoryReady, setDirectoryReady] = useState(false);
     const [statusText, setStatusText] = useState("");
 
+    // indicators -------------------------
+
     // directoryReady
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -55,6 +57,50 @@ const useFileSystem = () => {
             alert(error);
             console.error(error);
         }
+    }
+
+    async function selectItem(item) {
+        // TODO
+    }
+
+    // Create -------------------------------------
+
+    async function addNewFolderInSelected() {
+        // TODO
+    }
+
+    async function addNewFileInSelected() {
+        // TODO
+    }
+
+    // Remove
+
+    async function removeSelected() {
+        // TODO
+        if (isFolder(selectedHandle)) {
+            _removeFolder(selectedHandle);
+        } else {
+            _removeFile(selectedHandle);
+        }
+    }
+
+    async function _removeFolder(folderHandle) {}
+
+    async function _removeFile(fileHandle) {}
+
+    // Read -------------------------------
+
+    async function getFolderTree() {
+        // TODO
+    }
+
+    // Util ----------------------------
+
+    async function isFolder() {
+        // TODO
+    }
+    async function getParentOfSelected() {
+        // TODO
     }
 
     // not cleaned up yet ---------------------------------------------
@@ -134,9 +180,10 @@ const useFileSystem = () => {
     }
 
     return {
-        openDirectory,
         directoryReady,
         statusText,
+        openDirectory,
+        getFolderTree,
     };
 };
 

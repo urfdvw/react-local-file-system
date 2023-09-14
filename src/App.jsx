@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import useFileSystem from "./useFileSystem";
 
 export default function App() {
