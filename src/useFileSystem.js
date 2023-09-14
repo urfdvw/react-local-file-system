@@ -88,6 +88,22 @@ const useFileSystem = () => {
 
     async function _removeFile(fileHandle) {}
 
+    // update
+
+    async function writeText(fileHandle) {
+        // TODO
+        // not using selected handle directly??
+    }
+
+    async function renameSelected() {
+        // TODO
+    }
+
+    async function moveSelected(selectedHandle) {
+        // TODO
+        // not using selected handle directly??
+    }
+
     // Read -------------------------------
 
     async function getFolderTree() {
@@ -104,6 +120,7 @@ const useFileSystem = () => {
     }
 
     // not cleaned up yet ---------------------------------------------
+    
     async function fileHandle2text(fileHandle) {
         try {
             const file = await fileHandle.getFile();
