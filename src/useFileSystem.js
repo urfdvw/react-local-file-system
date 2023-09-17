@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 const useFileSystem = () => {
     const [rootDirHandle, setRootDirHandle] = useState(null);
-    const [selectedHandle, setSelectedHandle] = useState(null);
     const [directoryReady, setDirectoryReady] = useState(false);
     const [statusText, setStatusText] = useState("");
 
@@ -30,14 +29,12 @@ const useFileSystem = () => {
                 return "No Directory Connected!";
             } else {
                 const info =
-                    rootDirHandle.name +
-                    " connected, " +
-                    selectedHandle.name +
-                    " selected";
+                    " connected to " +
+                    rootDirHandle.name;
                 return info;
             }
         });
-    }, [rootDirHandle, selectedHandle, directoryReady]);
+    }, [rootDirHandle, directoryReady]);
 
     async function openDirectory() {
         try {
@@ -47,7 +44,6 @@ const useFileSystem = () => {
             if (dirHandle) {
                 console.log("Directory handle opened.");
                 setRootDirHandle(dirHandle);
-                setSelectedHandle(dirHandle);
             } else {
                 throw new Error(
                     "Failed to open directory handle. `dirHandle` created but empty"
@@ -65,22 +61,22 @@ const useFileSystem = () => {
 
     // Create -------------------------------------
 
-    async function addNewFolderInSelected() {
+    async function addNewFolder(itemHandle) {
         // TODO
     }
 
-    async function addNewFileInSelected() {
+    async function addNewFile(itemHandle) {
         // TODO
     }
 
     // Remove
 
-    async function removeSelected() {
+    async function removeItem(itemHandle) {
         // TODO
-        if (isFolder(selectedHandle)) {
-            _removeFolder(selectedHandle);
+        if (isFolder(itemHandle)) {
+            _removeFolder(itemHandle);
         } else {
-            _removeFile(selectedHandle);
+            _removeFile(itemHandle);
         }
     }
 
@@ -90,18 +86,16 @@ const useFileSystem = () => {
 
     // update
 
-    async function writeText(fileHandle) {
-        // TODO
-        // not using selected handle directly??
-    }
-
-    async function renameSelected() {
+    async function writeText(itemHandle) {
         // TODO
     }
 
-    async function moveSelected(selectedHandle) {
+    async function renameItem(itemHandle) {
         // TODO
-        // not using selected handle directly??
+    }
+
+    async function moveItem(itemHandle, fromFolderHandle, toFolderHandle) {
+        // TODO
     }
 
     // Read -------------------------------
@@ -112,10 +106,15 @@ const useFileSystem = () => {
 
     // Util ----------------------------
 
-    async function isFolder() {
+    async function isFolder(itemHandle) {
         // TODO
     }
-    async function getParentOfSelected() {
+    async function getFolderByItem(itemHandle) {
+        if (isFolder(itemHandle)) {
+            return itemHandle
+        } else {
+            // return parent of itemHandle
+        }
         // TODO
     }
 
