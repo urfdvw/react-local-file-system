@@ -8,3 +8,12 @@
 # select logic
 - select logic should be part of the folder tree component
     - not the useFileSystem hook
+
+# parent of file handle
+- looks like this is not a easy thing
+    - this is not very critical if not offered as a util function
+    - this can be implemented as a function when the folder tree is constructed
+
+# folder tree
+- looks like helpful, but might not be a good idea as part of the hook
+    - will be a good idea as a part of the folder tree component.
