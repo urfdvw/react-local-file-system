@@ -28,9 +28,7 @@ const useFileSystem = () => {
             if (!directoryReady) {
                 return "No Directory Connected!";
             } else {
-                const info =
-                    " connected to " +
-                    rootDirHandle.name;
+                const info = " connected to " + rootDirHandle.name;
                 return info;
             }
         });
@@ -53,10 +51,6 @@ const useFileSystem = () => {
             alert(error);
             console.error(error);
         }
-    }
-
-    async function selectItem(item) {
-        // TODO
     }
 
     // Create -------------------------------------
@@ -99,28 +93,15 @@ const useFileSystem = () => {
     }
 
     // Read -------------------------------
-
-    async function getFolderTree() {
-        // TODO
-    }
-
-    // Util ----------------------------
-
-    async function isFolder(itemHandle) {
-        // TODO
-    }
-    async function getFolderByItem(itemHandle) {
-        if (isFolder(itemHandle)) {
-            return itemHandle
-        } else {
-            // return parent of itemHandle
+    async function getFolderContent(folderHandle) {
+        const layer = [];
+        for await (const entry of await folderHandle.values()) {
+            layer.push(entry);
         }
-        // TODO
+        return layer;
     }
 
-    // not cleaned up yet ---------------------------------------------
-    
-    async function fileHandle2text(fileHandle) {
+    async function getFileText(fileHandle) {
         try {
             const file = await fileHandle.getFile();
             const contents = await file.text();
@@ -129,6 +110,16 @@ const useFileSystem = () => {
             console.error(error);
             return null;
         }
+    }
+
+    async function getFolderTree() {
+        // Backlogged
+    }
+
+    // Util ----------------------------
+
+    async function isFolder(itemHandle) {
+        return itemHandle.kind === "directory";
     }
 
     async function path2Handles(path, opt) {
@@ -142,15 +133,41 @@ const useFileSystem = () => {
         // get dir handle
         let curDirectoryHandle = rootDirHandle;
         for (const l of levels.slice(0, -1)) {
-            console.log("l", [l]);
-            curDirectoryHandle = await curDirectoryHandle.getDirectoryHandle(l);
+            if (l) {
+                console.log("l", [l]);
+                curDirectoryHandle =
+                    await curDirectoryHandle.getDirectoryHandle(l);
+            }
         }
         // get file handle
         const fileHandle =
             levels.at(-1) === ""
                 ? null
                 : await curDirectoryHandle.getFileHandle(levels.at(-1), opt);
-        return [curDirectoryHandle, fileHandle];
+        return { curDirectoryHandle, fileHandle };
+    }
+
+    async function getFolderByItem(itemHandle) {
+        let out;
+        if (isFolder(itemHandle)) {
+            out = itemHandle;
+        } else {
+            out = await itemHandle.getParent();
+        }
+        // TODO
+    }
+
+    // not cleaned up yet ---------------------------------------------
+
+    async function fileHandle2text(fileHandle) {
+        try {
+            const file = await fileHandle.getFile();
+            const contents = await file.text();
+            return String(contents);
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 
     async function readFile(path, opt) {
@@ -199,7 +216,9 @@ const useFileSystem = () => {
         directoryReady,
         statusText,
         openDirectory,
-        getFolderTree,
+        getFolderContent,
+        path2Handles,
+        getFileText,
     };
 };
 
