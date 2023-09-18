@@ -11,6 +11,7 @@ const useFileSystem = () => {
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
+                // eslint-disable-next-line no-unused-vars
                 for await (const [key, value] of rootDirHandle.entries()) {
                     break;
                 }
