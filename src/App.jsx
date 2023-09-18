@@ -7,6 +7,8 @@ export default function App() {
         openDirectory,
         getFolderContent,
         getFileText,
+        addNewFolder,
+        addNewFile,
         path2Handles,
         isFolder,
     } = useFileSystem();
@@ -56,7 +58,7 @@ export default function App() {
                     const testFileText = await getFileText(fileHandleTestFile);
                     console.log("testFileText: ", testFileText);
 
-                    console.log("=== Test isFolder() on file ===");
+                    console.log("=== Test isFolder() ===");
                     console.log(
                         "from test_dir: ",
                         await isFolder(curDirectoryHandleTestFile)
@@ -64,6 +66,24 @@ export default function App() {
                     console.log(
                         "from test_file: ",
                         await isFolder(fileHandleTestFile)
+                    );
+
+                    console.log("=== Test addNew ===");
+                    const newFolder = await addNewFolder(
+                        curDirectoryHandleRoot,
+                        "test_new_folder"
+                    );
+                    console.log(
+                        "root content after creation:",
+                        await getFolderContent(curDirectoryHandleRoot)
+                    );
+                    const newFile = await addNewFile(
+                        newFolder,
+                        "test_new_file"
+                    );
+                    console.log(
+                        "new folder content after creation:",
+                        await getFolderContent(newFolder)
                     );
                 }}
             >

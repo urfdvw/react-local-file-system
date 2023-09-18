@@ -17,3 +17,4 @@
 # folder tree
 - looks like helpful, but might not be a good idea as part of the hook
     - will be a good idea as a part of the folder tree component.
+- `folderHandle.values()` is better than `folderHandle.entrys()` as it returns a obj not list

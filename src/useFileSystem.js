@@ -44,9 +44,7 @@ const useFileSystem = () => {
                 console.log("Directory handle opened.");
                 setRootDirHandle(dirHandle);
             } else {
-                throw new Error(
-                    "Failed to open directory handle. `dirHandle` created but empty"
-                ); // not sure wether this is reachiable
+                throw new Error("Failed to open directory handle. `dirHandle` created but empty"); // not sure wether this is reachiable
             }
         } catch (error) {
             alert(error);
@@ -56,12 +54,37 @@ const useFileSystem = () => {
 
     // Create -------------------------------------
 
-    async function addNewFolder(itemHandle) {
-        // TODO
+    async function addNewFolder(folderHandle, newFolderName) {
+        return await addNewItem(folderHandle, newFolderName, "directory");
     }
 
-    async function addNewFile(itemHandle) {
-        // TODO
+    async function addNewFile(folderHandle, newFileName) {
+        return await addNewItem(folderHandle, newFileName, "file");
+    }
+
+    async function addNewItem(folderHandle, newItemName, kind) {
+        var newItemHandle;
+        try {
+            if (kind === "file") {
+                newItemHandle = await folderHandle.getFileHandle(newItemName);
+            } else {
+                newItemHandle = await folderHandle.getDirectoryHandle(newItemName);
+            }
+            alert(newItemName + " already exists");
+            return newItemHandle;
+        } catch {
+            console.log(newItemName + " does not exist, creating");
+            if (kind === "file") {
+                newItemHandle = await folderHandle.getFileHandle(newItemName, {
+                    create: true,
+                });
+            } else {
+                newItemHandle = await folderHandle.getDirectoryHandle(newItemName, {
+                    create: true,
+                });
+            }
+            return newItemHandle;
+        }
     }
 
     // Remove
@@ -132,15 +155,11 @@ const useFileSystem = () => {
         for (const l of levels.slice(0, -1)) {
             if (l) {
                 console.log("l", [l]);
-                curDirectoryHandle =
-                    await curDirectoryHandle.getDirectoryHandle(l);
+                curDirectoryHandle = await curDirectoryHandle.getDirectoryHandle(l);
             }
         }
         // get file handle
-        const fileHandle =
-            levels.at(-1) === ""
-                ? null
-                : await curDirectoryHandle.getFileHandle(levels.at(-1), opt);
+        const fileHandle = levels.at(-1) === "" ? null : await curDirectoryHandle.getFileHandle(levels.at(-1), opt);
         return { curDirectoryHandle, fileHandle };
     }
 
@@ -149,42 +168,10 @@ const useFileSystem = () => {
     }
 
     // not cleaned up yet ---------------------------------------------
-
-    async function fileHandle2text(fileHandle) {
-        try {
-            const file = await fileHandle.getFile();
-            const contents = await file.text();
-            return String(contents);
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-
-    async function readFile(path, opt) {
-        try {
-            const [curDirectoryHandle, fileHandle] = await path2Handles(
-                path,
-                opt
-            );
-            console.log(path, "found");
-            return fileHandle2text(fileHandle);
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-
-    async function readDir(path) {
-        try {
-            const [curDirectoryHandle, fileHandle] = await path2Handles(path);
-            console.log(path, "found");
-            return await curDirectoryHandle.entries();
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
+    // not cleaned up yet ---------------------------------------------
+    // not cleaned up yet ---------------------------------------------
+    // not cleaned up yet ---------------------------------------------
+    // not cleaned up yet ---------------------------------------------
 
     async function writeFile(path, text) {
         try {
@@ -209,6 +196,8 @@ const useFileSystem = () => {
         openDirectory,
         getFolderContent,
         getFileText,
+        addNewFolder,
+        addNewFile,
         path2Handles,
         isFolder,
     };
