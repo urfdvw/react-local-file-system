@@ -118,10 +118,6 @@ const useFileSystem = () => {
 
     // Util ----------------------------
 
-    async function isFolder(itemHandle) {
-        return itemHandle.kind === "directory";
-    }
-
     async function path2Handles(path, opt) {
         if (!opt) {
             opt = {};
@@ -147,14 +143,8 @@ const useFileSystem = () => {
         return { curDirectoryHandle, fileHandle };
     }
 
-    async function getFolderByItem(itemHandle) {
-        let out;
-        if (isFolder(itemHandle)) {
-            out = itemHandle;
-        } else {
-            out = await itemHandle.getParent();
-        }
-        // TODO
+    async function isFolder(itemHandle) {
+        return itemHandle.kind === "directory";
     }
 
     // not cleaned up yet ---------------------------------------------
@@ -217,8 +207,9 @@ const useFileSystem = () => {
         statusText,
         openDirectory,
         getFolderContent,
-        path2Handles,
         getFileText,
+        path2Handles,
+        isFolder,
     };
 };
 

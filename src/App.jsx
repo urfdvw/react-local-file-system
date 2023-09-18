@@ -6,8 +6,9 @@ export default function App() {
         statusText,
         openDirectory,
         getFolderContent,
-        path2Handles,
         getFileText,
+        path2Handles,
+        isFolder,
     } = useFileSystem();
 
     return (
@@ -54,6 +55,16 @@ export default function App() {
                     console.log("=== Test getFileText() on file ===");
                     const testFileText = await getFileText(fileHandleTestFile);
                     console.log("testFileText: ", testFileText);
+
+                    console.log("=== Test isFolder() on file ===");
+                    console.log(
+                        "from test_dir: ",
+                        await isFolder(curDirectoryHandleTestFile)
+                    );
+                    console.log(
+                        "from test_file: ",
+                        await isFolder(fileHandleTestFile)
+                    );
                 }}
             >
                 Start Test
