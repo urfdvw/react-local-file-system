@@ -104,8 +104,18 @@ const useFileSystem = () => {
 
     // update
 
-    async function writeText(itemHandle) {
-        // TODO
+    async function writeFileText(fileHandle, text) {
+        try {
+            // Create a FileSystemWritableFileStream to write to.
+            const writable = await fileHandle.createWritable();
+            // Write the contents of the file to the stream.
+            await writable.write(text);
+            // Close the file and write the contents to disk.
+            await writable.close();
+            console.log("Successfully wrote to", fileHandle.name);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     async function renameItem(itemHandle) {
@@ -167,29 +177,6 @@ const useFileSystem = () => {
         return itemHandle.kind === "directory";
     }
 
-    // not cleaned up yet ---------------------------------------------
-    // not cleaned up yet ---------------------------------------------
-    // not cleaned up yet ---------------------------------------------
-    // not cleaned up yet ---------------------------------------------
-    // not cleaned up yet ---------------------------------------------
-
-    async function writeFile(path, text) {
-        try {
-            const [curDirectoryHandle, fileHandle] = await path2Handles(path, {
-                create: true,
-            });
-            // Create a FileSystemWritableFileStream to write to.
-            const writable = await fileHandle.createWritable();
-            // Write the contents of the file to the stream.
-            await writable.write(text);
-            // Close the file and write the contents to disk.
-            await writable.close();
-            console.log("Successfully wrote to", path);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     return {
         directoryReady,
         statusText,
@@ -198,6 +185,7 @@ const useFileSystem = () => {
         getFileText,
         addNewFolder,
         addNewFile,
+        writeFileText,
         path2Handles,
         isFolder,
     };
