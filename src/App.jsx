@@ -10,6 +10,7 @@ export default function App() {
         addNewFolder,
         addNewFile,
         writeFileText,
+        removeEntry,
         path2Handles,
         isFolder,
     } = useFileSystem();
@@ -57,6 +58,10 @@ export default function App() {
                     console.log("=== Test newFile ===");
                     await writeFileText(newFile, "new_test_text");
                     console.log(await getFileText(newFile));
+
+                    console.log("=== Test remove file ===");
+                    await removeEntry(newFolder, newFile);
+                    console.log("new folder content after removing file:", await getFolderContent(newFolder));
                 }}
             >
                 Start Test

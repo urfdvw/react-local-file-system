@@ -89,18 +89,21 @@ const useFileSystem = () => {
 
     // Remove
 
-    async function removeEntry(entryHandle) {
+    async function removeEntry(parentHandle, entryHandle) {
+        // Will not work without https
         // TODO
         if (isFolder(entryHandle)) {
-            _removeFolder(entryHandle);
+            await _removeFolder(parentHandle, entryHandle);
         } else {
-            _removeFile(entryHandle);
+            await _removeFile(parentHandle, entryHandle);
         }
     }
 
-    async function _removeFolder(folderHandle) {}
+    async function _removeFolder(parentHandle, folderHandle) {}
 
-    async function _removeFile(fileHandle) {}
+    async function _removeFile(parentHandle, fileHandle) {
+        await parentHandle.removeEntry(fileHandle.name);
+    }
 
     // update
 
@@ -186,6 +189,7 @@ const useFileSystem = () => {
         addNewFolder,
         addNewFile,
         writeFileText,
+        removeEntry,
         path2Handles,
         isFolder,
     };
