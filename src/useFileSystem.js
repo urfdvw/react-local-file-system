@@ -55,46 +55,46 @@ const useFileSystem = () => {
     // Create -------------------------------------
 
     async function addNewFolder(folderHandle, newFolderName) {
-        return await addNewItem(folderHandle, newFolderName, "directory");
+        return await addNewEntry(folderHandle, newFolderName, "directory");
     }
 
     async function addNewFile(folderHandle, newFileName) {
-        return await addNewItem(folderHandle, newFileName, "file");
+        return await addNewEntry(folderHandle, newFileName, "file");
     }
 
-    async function addNewItem(folderHandle, newItemName, kind) {
-        var newItemHandle;
+    async function addNewEntry(folderHandle, newEntryName, kind) {
+        var newEntryHandle;
         try {
             if (kind === "file") {
-                newItemHandle = await folderHandle.getFileHandle(newItemName);
+                newEntryHandle = await folderHandle.getFileHandle(newEntryName);
             } else {
-                newItemHandle = await folderHandle.getDirectoryHandle(newItemName);
+                newEntryHandle = await folderHandle.getDirectoryHandle(newEntryName);
             }
-            alert(newItemName + " already exists");
-            return newItemHandle;
+            alert(newEntryName + " already exists");
+            return newEntryHandle;
         } catch {
-            console.log(newItemName + " does not exist, creating");
+            console.log(newEntryName + " does not exist, creating");
             if (kind === "file") {
-                newItemHandle = await folderHandle.getFileHandle(newItemName, {
+                newEntryHandle = await folderHandle.getFileHandle(newEntryName, {
                     create: true,
                 });
             } else {
-                newItemHandle = await folderHandle.getDirectoryHandle(newItemName, {
+                newEntryHandle = await folderHandle.getDirectoryHandle(newEntryName, {
                     create: true,
                 });
             }
-            return newItemHandle;
+            return newEntryHandle;
         }
     }
 
     // Remove
 
-    async function removeItem(itemHandle) {
+    async function removeEntry(entryHandle) {
         // TODO
-        if (isFolder(itemHandle)) {
-            _removeFolder(itemHandle);
+        if (isFolder(entryHandle)) {
+            _removeFolder(entryHandle);
         } else {
-            _removeFile(itemHandle);
+            _removeFile(entryHandle);
         }
     }
 
@@ -118,11 +118,11 @@ const useFileSystem = () => {
         }
     }
 
-    async function renameItem(itemHandle) {
+    async function renameEntry(entryHandle) {
         // TODO
     }
 
-    async function moveItem(itemHandle, fromFolderHandle, toFolderHandle) {
+    async function moveEntry(entryHandle, fromFolderHandle, toFolderHandle) {
         // TODO
     }
 
@@ -173,8 +173,8 @@ const useFileSystem = () => {
         return { curDirectoryHandle, fileHandle };
     }
 
-    async function isFolder(itemHandle) {
-        return itemHandle.kind === "directory";
+    async function isFolder(entryHandle) {
+        return entryHandle.kind === "directory";
     }
 
     return {
