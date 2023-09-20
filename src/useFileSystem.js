@@ -92,7 +92,7 @@ const useFileSystem = () => {
     async function removeEntry(parentHandle, entryHandle) {
         // Will not work without https
         // TODO
-        if (isFolder(entryHandle)) {
+        if (await isFolder(entryHandle)) {
             await _removeFolder(parentHandle, entryHandle);
         } else {
             await _removeFile(parentHandle, entryHandle);
