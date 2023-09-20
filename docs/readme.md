@@ -23,6 +23,9 @@ Methods
 Over head file
 - sync one directory to another
 
+# Features that need https
+- remove file/folder
+
 # Note
 
 [Adafruit's code](https://github.com/circuitpython/web-editor/blob/main/js/common/usb-file-transfer.js)

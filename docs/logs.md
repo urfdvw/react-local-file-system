@@ -20,3 +20,5 @@
 - `folderHandle.values()` is better than `folderHandle.entrys()` as it returns a obj not list
 
 # gh-page 
+- added `npm install gh-pages`
+- added `base: "./",` (must have to have GH page to work)
