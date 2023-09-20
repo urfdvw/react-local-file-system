@@ -87,22 +87,37 @@ const useFileSystem = () => {
         }
     }
 
-    // Remove
+    // Read -------------------------------
 
-    async function removeEntry(parentHandle, entryHandle) {
-        // Will not work without https
-        // TODO
-        if (await isFolder(entryHandle)) {
-            await _removeFolder(parentHandle, entryHandle);
-        } else {
-            await _removeFile(parentHandle, entryHandle);
+    async function getFolderContent(folderHandle) {
+        const layer = [];
+        for await (const entry of await folderHandle.values()) {
+            layer.push(entry);
+        }
+        return layer;
+    }
+
+    async function getFileText(fileHandle) {
+        try {
+            const file = await fileHandle.getFile();
+            const contents = await file.text();
+            return String(contents);
+        } catch (error) {
+            console.error(error);
+            return null;
         }
     }
 
-    async function _removeFolder(parentHandle, folderHandle) {}
-
-    async function _removeFile(parentHandle, fileHandle) {
-        await parentHandle.removeEntry(fileHandle.name);
+    async function getFolderTree(folderHandle) {
+        var out = [];
+        for (const entry of await getFolderContent(folderHandle)) {
+            out.push({
+                parent: folderHandle,
+                handle: entry,
+                children: (await isFolder(entry)) ? await getFolderTree(entry) : null,
+            });
+        }
+        return out;
     }
 
     // update
@@ -129,28 +144,22 @@ const useFileSystem = () => {
         // TODO
     }
 
-    // Read -------------------------------
-    async function getFolderContent(folderHandle) {
-        const layer = [];
-        for await (const entry of await folderHandle.values()) {
-            layer.push(entry);
-        }
-        return layer;
-    }
+    // Delete
 
-    async function getFileText(fileHandle) {
-        try {
-            const file = await fileHandle.getFile();
-            const contents = await file.text();
-            return String(contents);
-        } catch (error) {
-            console.error(error);
-            return null;
+    async function removeEntry(parentHandle, entryHandle) {
+        // Will not work without https
+        // TODO
+        if (await isFolder(entryHandle)) {
+            await _removeFolder(parentHandle, entryHandle);
+        } else {
+            await _removeFile(parentHandle, entryHandle);
         }
     }
 
-    async function getFolderTree() {
-        // Backlogged
+    async function _removeFolder(parentHandle, folderHandle) {}
+
+    async function _removeFile(parentHandle, fileHandle) {
+        await parentHandle.removeEntry(fileHandle.name);
     }
 
     // Util ----------------------------
@@ -186,6 +195,7 @@ const useFileSystem = () => {
         openDirectory,
         getFolderContent,
         getFileText,
+        getFolderTree,
         addNewFolder,
         addNewFile,
         writeFileText,
