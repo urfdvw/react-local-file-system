@@ -10,6 +10,7 @@ export default function App() {
         getFolderTree,
         addNewFolder,
         addNewFile,
+        addRandomFolderTree,
         writeFileText,
         removeEntry,
         path2Handles,
@@ -76,6 +77,9 @@ export default function App() {
                     console.log("=== Test remove file ===");
                     await removeEntry(newFolder, newFile);
                     console.log("new folder content after removing file:", await getFolderContent(newFolder));
+
+                    console.log("=== Test addRandomFolderTree ===");
+                    addRandomFolderTree(newFolder, 2, 5);
                 }}
             >
                 Run Test

@@ -87,6 +87,26 @@ const useFileSystem = () => {
         }
     }
 
+    async function addRandomFolderTree(folderHandle, numLayers, numEntries) {
+        // this function is mostly for testing
+        var layerFolders = [folderHandle];
+        for (let layerIndex = 0; layerIndex < numLayers; layerIndex++) {
+            const nextLayerFolder = [];
+            for (const curFolderHandle of layerFolders) {
+                for (let entryIndex = 0; entryIndex < numEntries; entryIndex++) {
+                    const randomNumber = Math.random();
+                    if (randomNumber < 0.7) {
+                        // make folder
+                        nextLayerFolder.push(await addNewFolder(curFolderHandle, String(randomNumber)));
+                    } else {
+                        await addNewFile(curFolderHandle, String(randomNumber));
+                    }
+                }
+            }
+            layerFolders = nextLayerFolder;
+        }
+    }
+
     // Read -------------------------------
 
     async function getFolderContent(folderHandle) {
@@ -198,6 +218,7 @@ const useFileSystem = () => {
         getFolderTree,
         addNewFolder,
         addNewFile,
+        addRandomFolderTree,
         writeFileText,
         removeEntry,
         path2Handles,
