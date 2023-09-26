@@ -5,7 +5,7 @@ const useFileSystem = () => {
     const [directoryReady, setDirectoryReady] = useState(false);
     const [statusText, setStatusText] = useState("");
 
-    // indicators -------------------------
+    // indicators ====================================
 
     // directoryReady
     useEffect(() => {
@@ -35,6 +35,7 @@ const useFileSystem = () => {
         });
     }, [rootDirHandle, directoryReady]);
 
+    // Open dir ========================================
     async function openDirectory() {
         try {
             const dirHandle = await window.showDirectoryPicker({
@@ -50,6 +51,57 @@ const useFileSystem = () => {
             alert(error);
             console.error(error);
         }
+    }
+
+    // file level ====================================
+    
+    async function writeFileText(fileHandle, text) {
+        try {
+            // Create a FileSystemWritableFileStream to write to.
+            const writable = await fileHandle.createWritable();
+            // Write the contents of the file to the stream.
+            await writable.write(text);
+            // Close the file and write the contents to disk.
+            await writable.close();
+            console.log("Successfully wrote to", fileHandle.name);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    
+    async function getFileText(fileHandle) {
+        try {
+            const file = await fileHandle.getFile();
+            const contents = await file.text();
+            return String(contents);
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    // folder level ================================
+
+    // Read -------------------------------
+
+    async function getFolderContent(folderHandle) {
+        const layer = [];
+        for await (const entry of await folderHandle.values()) {
+            layer.push(entry);
+        }
+        return layer;
+    }
+
+    async function getFolderTree(folderHandle) {
+        var out = [];
+        for (const entry of await getFolderContent(folderHandle)) {
+            out.push({
+                parent: folderHandle,
+                handle: entry,
+                children: (await isFolder(entry)) ? await getFolderTree(entry) : null,
+            });
+        }
+        return out;
     }
 
     // Create -------------------------------------
@@ -107,64 +159,7 @@ const useFileSystem = () => {
         }
     }
 
-    // Read -------------------------------
-
-    async function getFolderContent(folderHandle) {
-        const layer = [];
-        for await (const entry of await folderHandle.values()) {
-            layer.push(entry);
-        }
-        return layer;
-    }
-
-    async function getFileText(fileHandle) {
-        try {
-            const file = await fileHandle.getFile();
-            const contents = await file.text();
-            return String(contents);
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-
-    async function getFolderTree(folderHandle) {
-        var out = [];
-        for (const entry of await getFolderContent(folderHandle)) {
-            out.push({
-                parent: folderHandle,
-                handle: entry,
-                children: (await isFolder(entry)) ? await getFolderTree(entry) : null,
-            });
-        }
-        return out;
-    }
-
-    // update
-
-    async function writeFileText(fileHandle, text) {
-        try {
-            // Create a FileSystemWritableFileStream to write to.
-            const writable = await fileHandle.createWritable();
-            // Write the contents of the file to the stream.
-            await writable.write(text);
-            // Close the file and write the contents to disk.
-            await writable.close();
-            console.log("Successfully wrote to", fileHandle.name);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    async function renameEntry(entryHandle) {
-        // TODO
-    }
-
-    async function moveEntry(entryHandle, fromFolderHandle, toFolderHandle) {
-        // TODO
-    }
-
-    // Delete
+    // Delete -----------------------------------------
 
     async function removeEntry(parentHandle, entryHandle) {
         // Will not work without https
@@ -184,6 +179,32 @@ const useFileSystem = () => {
 
     async function _removeFile(parentHandle, fileHandle) {
         await parentHandle.removeEntry(fileHandle.name);
+    }
+
+    // Copy --------------------------------------
+
+    async function copyEntry(entryHandle, newName) {
+
+    }
+
+    // Compound (Copy then Delete) ----------------------------------
+
+    async function renameEntry(entryHandle) {
+        // TODO
+    }
+
+    async function moveEntry(entryHandle, fromFolderHandle, toFolderHandle) {
+        // TODO
+    }
+
+    // Trash bin ----------------------------------
+
+    async function moveToTrash(entryHandle) {
+        // TODO
+    }
+
+    async function recoverFromTrash(entryHandle) {
+        // TODO
     }
 
     // Util ----------------------------
