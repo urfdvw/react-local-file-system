@@ -12,6 +12,7 @@ export default function App() {
         addNewFile,
         addRandomFolderTree,
         writeFileText,
+        copyEntry,
         removeEntry,
         path2Handles,
         isFolder,
@@ -59,7 +60,12 @@ export default function App() {
             <p>Results in the browser console</p>
             <button
                 onClick={async () => {
-                    const { curDirectoryHandle: rootDirectoryHandle, fileHandle: nullFile } = await path2Handles("/");
+                    const { curDirectoryHandle: rootDirectoryHandle, fileHandle: rawFileHandle } = await path2Handles(
+                        "/test_raw.mpy"
+                    );
+                    const { curDirectoryHandle: rootDirectoryHandleDuplicated, fileHandle: textFileHandle } = await path2Handles(
+                        "/test_file"
+                    );
 
                     console.log("=== Test addNew ===");
                     const newFolder = await addNewFolder(rootDirectoryHandle, "test_new_folder");
@@ -83,6 +89,10 @@ export default function App() {
                     console.log(await getFolderTree(newFolder));
                     await removeEntry(rootDirectoryHandle, newFolder);
                     console.log(await getFolderTree(rootDirectoryHandle));
+
+                    console.log("=== Test copyEntry ===");
+                    await copyEntry(rawFileHandle, rootDirectoryHandle, 'copied_raw.mpy');
+                    await copyEntry(textFileHandle, rootDirectoryHandle, 'copied_text');
                 }}
             >
                 Run Test

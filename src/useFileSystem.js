@@ -54,7 +54,7 @@ const useFileSystem = () => {
     }
 
     // file level ====================================
-    
+
     async function writeFileText(fileHandle, text) {
         try {
             // Create a FileSystemWritableFileStream to write to.
@@ -68,7 +68,7 @@ const useFileSystem = () => {
             console.error(error);
         }
     }
-    
+
     async function getFileText(fileHandle) {
         try {
             const file = await fileHandle.getFile();
@@ -107,14 +107,14 @@ const useFileSystem = () => {
     // Create -------------------------------------
 
     async function addNewFolder(folderHandle, newFolderName) {
-        return await addNewEntry(folderHandle, newFolderName, "directory");
+        return await _addNewEntry(folderHandle, newFolderName, "directory");
     }
 
     async function addNewFile(folderHandle, newFileName) {
-        return await addNewEntry(folderHandle, newFileName, "file");
+        return await _addNewEntry(folderHandle, newFileName, "file");
     }
 
-    async function addNewEntry(folderHandle, newEntryName, kind) {
+    async function _addNewEntry(folderHandle, newEntryName, kind) {
         var newEntryHandle;
         try {
             if (kind === "file") {
@@ -183,8 +183,24 @@ const useFileSystem = () => {
 
     // Copy --------------------------------------
 
-    async function copyEntry(entryHandle, newName) {
+    async function copyEntry(entryHandle, targetFolderHandle, newName) {
+        if (await isFolder(entryHandle)) {
+            await _copyFolder(entryHandle, targetFolderHandle, newName);
+        } else {
+            await _copyFile(entryHandle, targetFolderHandle, newName);
+        }
+    }
 
+    async function _copyFolder(folderHandle, targetFolderHandle, newName) {
+        // TODO
+    }
+
+    async function _copyFile(fileHandle, targetFolderHandle, newName) {
+        const fileData = await fileHandle.getFile();
+        const newFileHandle = await addNewFile(targetFolderHandle, newName);
+        const writable = await newFileHandle.createWritable();
+        await writable.write(fileData);
+        await writable.close();
     }
 
     // Compound (Copy then Delete) ----------------------------------
@@ -246,6 +262,7 @@ const useFileSystem = () => {
         addRandomFolderTree,
         writeFileText,
         removeEntry,
+        copyEntry,
         path2Handles,
         isFolder,
     };

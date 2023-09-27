@@ -22,3 +22,10 @@
 # gh-page 
 - added `npm install gh-pages`
 - added `base: "./",` (must have to have GH page to work)
+
+# using single page build 
+- to test out what can be used in single page
+
+# TODO
+- change tests to new orders
+- file name confiliction detect
