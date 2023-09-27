@@ -1,22 +1,19 @@
 import useFileSystem from "./useFileSystem";
+import {
+    getFolderContent,
+    getFileText,
+    getFolderTree,
+    addNewFolder,
+    addNewFile,
+    addRandomFolderTree,
+    writeFileText,
+    copyEntry,
+    removeEntry,
+    isFolder,
+} from "./fileSystemUtils";
 
 export default function App() {
-    const {
-        directoryReady,
-        statusText,
-        openDirectory,
-        getFolderContent,
-        getFileText,
-        getFolderTree,
-        addNewFolder,
-        addNewFile,
-        addRandomFolderTree,
-        writeFileText,
-        copyEntry,
-        removeEntry,
-        path2Handles,
-        isFolder,
-    } = useFileSystem();
+    const { openDirectory, directoryReady, statusText, path2Handles } = useFileSystem();
 
     return (
         <div className="App">
@@ -63,9 +60,8 @@ export default function App() {
                     const { curDirectoryHandle: rootDirectoryHandle, fileHandle: rawFileHandle } = await path2Handles(
                         "/test_raw.mpy"
                     );
-                    const { curDirectoryHandle: rootDirectoryHandleDuplicated, fileHandle: textFileHandle } = await path2Handles(
-                        "/test_file"
-                    );
+                    const { curDirectoryHandle: rootDirectoryHandleDuplicated, fileHandle: textFileHandle } =
+                        await path2Handles("/test_file");
 
                     console.log("=== Test addNew ===");
                     const newFolder = await addNewFolder(rootDirectoryHandle, "test_new_folder");
@@ -91,8 +87,8 @@ export default function App() {
                     console.log(await getFolderTree(rootDirectoryHandle));
 
                     console.log("=== Test copyEntry ===");
-                    await copyEntry(rawFileHandle, rootDirectoryHandle, 'copied_raw.mpy');
-                    await copyEntry(textFileHandle, rootDirectoryHandle, 'copied_text');
+                    await copyEntry(rawFileHandle, rootDirectoryHandle, "copied_raw.mpy");
+                    await copyEntry(textFileHandle, rootDirectoryHandle, "copied_text");
                 }}
             >
                 Run Test
