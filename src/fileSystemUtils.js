@@ -1,28 +1,19 @@
 // file level ====================================
 
 export async function writeFileText(fileHandle, text) {
-    try {
-        // Create a FileSystemWritableFileStream to write to.
-        const writable = await fileHandle.createWritable();
-        // Write the contents of the file to the stream.
-        await writable.write(text);
-        // Close the file and write the contents to disk.
-        await writable.close();
-        console.log("Successfully wrote to", fileHandle.name);
-    } catch (error) {
-        console.error(error);
-    }
+    // Create a FileSystemWritableFileStream to write to.
+    const writable = await fileHandle.createWritable();
+    // Write the contents of the file to the stream.
+    await writable.write(text);
+    // Close the file and write the contents to disk.
+    await writable.close();
+    console.log("Successfully wrote to", fileHandle.name);
 }
 
 export async function getFileText(fileHandle) {
-    try {
-        const file = await fileHandle.getFile();
-        const contents = await file.text();
-        return String(contents);
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
+    const file = await fileHandle.getFile();
+    const contents = await file.text();
+    return String(contents);
 }
 
 // folder level ================================
@@ -31,6 +22,30 @@ export async function getFileText(fileHandle) {
 
 export async function isFolder(entryHandle) {
     return entryHandle.kind === "directory";
+}
+
+export async function isEntryHealthy(entryHandle) {
+    if (entryHandle === null) {
+        return false;
+    }
+    if (await isFolder(entryHandle)) {
+        try {
+            // eslint-disable-next-line no-unused-vars
+            for await (const [key, value] of entryHandle.entries()) {
+                break;
+            }
+            return true;
+        } catch {
+            return false;
+        }
+    } else {
+        try {
+            await getFileText(entryHandle);
+            return true;
+        } catch {
+            return false;
+        }
+    }
 }
 
 export async function getFolderContent(folderHandle) {

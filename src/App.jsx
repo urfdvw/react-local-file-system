@@ -3,6 +3,7 @@ import {
     writeFileText,
     getFileText,
     isFolder,
+    isEntryHealthy,
     getFolderContent,
     getFolderTree,
     alertOnExisting,
@@ -81,8 +82,8 @@ export default function App() {
                     console.log("=== Test checking file existence ===");
                     console.log("should be true", await alertOnExisting(rootHandle, testFileName));
                     console.log("should be false", await alertOnExisting(rootHandle, "non_existing_" + testFileName));
-                    console.log("should be true", await alertOnMissing(rootHandle, testFileName));
-                    console.log("should be false", await alertOnMissing(rootHandle, "non_existing_" + testFileName));
+                    console.log("should be false", await alertOnMissing(rootHandle, testFileName));
+                    console.log("should be true", await alertOnMissing(rootHandle, "non_existing_" + testFileName));
                 }}
             >
                 Run Tests
@@ -94,7 +95,7 @@ export default function App() {
                     const rootDirectoryHandle = await path2FolderHandles("");
 
                     console.log("=== Test addNew ===");
-                    const newFolder = await addNewFolder(rootDirectoryHandle, "test_new_folder");
+                    const newFolder = await addNewFolder(rootDirectoryHandle, "test_new_folder", { create: true });
                     console.log("root content after creation:", await getFolderContent(rootDirectoryHandle));
                     const newFile = await addNewFile(newFolder, "test_new_file");
                     console.log("new folder content after creation:", await getFolderContent(newFolder));
@@ -104,11 +105,13 @@ export default function App() {
                     console.log(await getFileText(newFile));
 
                     console.log("=== Test remove file ===");
+                    console.log("file healthy:", await isEntryHealthy(newFile));
                     console.log("reject this one:");
                     await removeEntry(newFolder, newFile);
                     console.log("new folder content after rejecting removing file:", await getFolderContent(newFolder));
                     await removeEntry(newFolder, newFile, true);
                     console.log("new folder content after removing file:", await getFolderContent(newFolder));
+                    console.log("file healthy:", await isEntryHealthy(newFile));
 
                     console.log("=== Test addRandomFolderTree ===");
                     await addRandomFolderTree(newFolder, 2, 5);

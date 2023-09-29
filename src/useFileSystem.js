@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isEntryHealthy } from "./fileSystemUtils";
 
 const useFileSystem = () => {
     const [rootDirHandle, setRootDirHandle] = useState(null);
@@ -8,15 +9,7 @@ const useFileSystem = () => {
     // directoryReady
     useEffect(() => {
         const interval = setInterval(async () => {
-            try {
-                // eslint-disable-next-line no-unused-vars
-                for await (const [key, value] of rootDirHandle.entries()) {
-                    break;
-                }
-                setDirectoryReady(true);
-            } catch {
-                setDirectoryReady(false);
-            }
+            setDirectoryReady(await isEntryHealthy(rootDirHandle));
         }, 1000);
         return () => clearInterval(interval);
     }, [rootDirHandle]);
