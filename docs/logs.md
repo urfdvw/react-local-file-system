@@ -33,6 +33,7 @@
 - no need to alert on addNewFile, as not overwriting data
     - if exists, just return handle of existing file
 - remove functions using handles not names, so don't need to alert on missing
+- let app level, not util level, worry about the alerts when danger actions happen
 
 # TODO
 - change tests to new orders

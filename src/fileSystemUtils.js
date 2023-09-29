@@ -68,29 +68,13 @@ export async function getFolderTree(folderHandle) {
     return out;
 }
 
-export async function _checkFileExists(parentHandle, fileName) {
+export async function checkFileExists(parentHandle, fileName) {
     try {
         await parentHandle.getFileHandle(fileName);
         return true;
     } catch {
         return false;
     }
-}
-
-export async function alertOnExisting(parentHandle, fileName) {
-    const needsAlert = await _checkFileExists(parentHandle, fileName);
-    if (needsAlert) {
-        alert(fileName + " already exists in " + parentHandle.name);
-    }
-    return needsAlert;
-}
-
-export async function alertOnMissing(parentHandle, fileName) {
-    const needsAlert = !(await _checkFileExists(parentHandle, fileName));
-    if (needsAlert) {
-        alert(fileName + " does not exist in " + parentHandle.name);
-    }
-    return needsAlert;
 }
 
 // Create -------------------------------------
@@ -128,16 +112,8 @@ export async function addRandomFolderTree(folderHandle, numLayers, numEntries) {
 }
 
 // Delete -----------------------------------------
-export async function removeEntry(parentHandle, entryHandle, force = false) {
-    if (!force) {
-        if (!confirm("Are you sure to remove " + entryHandle.name + " from " + parentHandle.name)) {
-            return;
-        }
-    }
-    _removeEntry(parentHandle, entryHandle);
-}
 
-export async function _removeEntry(parentHandle, entryHandle) {
+export async function removeEntry(parentHandle, entryHandle) {
     // Will not work without https
     if (await isFolder(entryHandle)) {
         await _removeFolder(parentHandle, entryHandle);
@@ -148,7 +124,7 @@ export async function _removeEntry(parentHandle, entryHandle) {
 
 export async function _removeFolder(parentHandle, folderHandle) {
     for (const entry of await getFolderContent(folderHandle)) {
-        await _removeEntry(folderHandle, entry);
+        await removeEntry(folderHandle, entry);
     }
     await parentHandle.removeEntry(folderHandle.name);
 }

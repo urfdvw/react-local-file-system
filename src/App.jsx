@@ -6,8 +6,7 @@ import {
     isEntryHealthy,
     getFolderContent,
     getFolderTree,
-    alertOnExisting,
-    alertOnMissing,
+    checkFileExists,
     addNewFolder,
     addNewFile,
     addRandomFolderTree,
@@ -80,10 +79,8 @@ export default function App() {
                     console.log("from test_file: ", await isFolder(testFileHandle));
 
                     console.log("=== Test checking file existence ===");
-                    console.log("should be true", await alertOnExisting(rootHandle, testFileName));
-                    console.log("should be false", await alertOnExisting(rootHandle, "non_existing_" + testFileName));
-                    console.log("should be false", await alertOnMissing(rootHandle, testFileName));
-                    console.log("should be true", await alertOnMissing(rootHandle, "non_existing_" + testFileName));
+                    console.log("should be true", await checkFileExists(rootHandle, testFileName));
+                    console.log("should be false", await checkFileExists(rootHandle, "non_existing_" + testFileName));
                 }}
             >
                 Run Tests
@@ -106,17 +103,15 @@ export default function App() {
 
                     console.log("=== Test remove file ===");
                     console.log("file healthy:", await isEntryHealthy(newFile));
-                    console.log("reject this one:");
-                    await removeEntry(newFolder, newFile);
                     console.log("new folder content after rejecting removing file:", await getFolderContent(newFolder));
-                    await removeEntry(newFolder, newFile, true);
+                    await removeEntry(newFolder, newFile);
                     console.log("new folder content after removing file:", await getFolderContent(newFolder));
                     console.log("file healthy:", await isEntryHealthy(newFile));
 
                     console.log("=== Test addRandomFolderTree ===");
                     await addRandomFolderTree(newFolder, 2, 5);
                     console.log(await getFolderTree(newFolder));
-                    await removeEntry(rootDirectoryHandle, newFolder, true);
+                    await removeEntry(rootDirectoryHandle, newFolder);
                     console.log(await getFolderTree(rootDirectoryHandle));
                 }}
             >
@@ -127,12 +122,11 @@ export default function App() {
             <button
                 onClick={async () => {
                     const rootDirectoryHandle = await path2FolderHandles("");
-                    const rawFileHandle = await rootDirectoryHandle.getFileHandle("test_raw.mpy");
                     const textFileHandle = await rootDirectoryHandle.getFileHandle("test_file");
 
                     console.log("=== Test copyEntry ===");
-                    await copyEntry(rawFileHandle, rootDirectoryHandle, "copied_raw.mpy");
                     await copyEntry(textFileHandle, rootDirectoryHandle, "copied_text");
+                    console.log(await getFolderContent(rootDirectoryHandle));
                 }}
             >
                 Run Test

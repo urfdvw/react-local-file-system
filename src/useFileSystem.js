@@ -58,7 +58,7 @@ const useFileSystem = () => {
                     folderHandle = await folderHandle.getDirectoryHandle(level, { create: create });
                 } catch {
                     // if not found
-                    alert(path + "does not exist");
+                    console.log(path + " does not exist");
                     return;
                 }
             }
