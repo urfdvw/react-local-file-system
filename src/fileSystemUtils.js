@@ -147,11 +147,16 @@ export async function copyEntry(entryHandle, targetFolderHandle, newName) {
     }
 }
 
-export async function _copyFolder(folderHandle, targetFolderHandle, newName) {
-    const newFolderHandle = await addNewFolder(targetFolderHandle, newName);
+export async function backupFolder(folderHandle, newFolderHandle) {
+    await cleanFolder(newFolderHandle);
     for (const entry of await getFolderContent(folderHandle)) {
         await copyEntry(entry, newFolderHandle, entry.name);
     }
+}
+
+export async function _copyFolder(folderHandle, targetFolderHandle, newName) {
+    const newFolderHandle = await addNewFolder(targetFolderHandle, newName);
+    await backupFolder(folderHandle, newFolderHandle);
     return newFolderHandle;
 }
 
