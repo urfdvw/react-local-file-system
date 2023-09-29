@@ -13,10 +13,17 @@ import {
     removeEntry,
     cleanFolder,
     copyEntry,
+    backupFolder,
 } from "./fileSystemUtils";
 
 export default function App() {
     const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
+    const {
+        openDirectory: openDirectoryBackup,
+        directoryReady: directoryReadyBackup,
+        statusText: statusTextBackup,
+        path2FolderHandles: path2FolderHandlesBackup,
+    } = useFileSystem();
 
     return (
         <div className="App">
@@ -133,6 +140,21 @@ export default function App() {
                     const copiedHandle = await copyEntry(testFolderHandle, rootDirectoryHandle, "copied tree");
                     console.log("original:", await getFolderTree(testFolderHandle));
                     console.log("copied:", await getFolderTree(copiedHandle));
+                }}
+            >
+                Run Test
+            </button>
+
+            <h3>Test Backup folder</h3>
+            <button onClick={openDirectoryBackup}>Open Backup Dir</button>
+            <p>statusText: {statusTextBackup}</p>
+            <button
+                onClick={async () => {
+                    const rootDirectoryHandle = await path2FolderHandles("");
+                    const backupDirectoryHandle = await path2FolderHandlesBackup("");
+                    await backupFolder(rootDirectoryHandle, backupDirectoryHandle);
+                    console.log("original:", await getFolderTree(rootDirectoryHandle));
+                    console.log("copied:", await getFolderTree(backupDirectoryHandle));
                 }}
             >
                 Run Test
