@@ -20,7 +20,6 @@ export default function App() {
     const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
     const {
         openDirectory: openDirectoryBackup,
-        directoryReady: directoryReadyBackup,
         statusText: statusTextBackup,
         path2FolderHandles: path2FolderHandlesBackup,
     } = useFileSystem();
