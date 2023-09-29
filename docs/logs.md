@@ -32,6 +32,7 @@
 - file existence is checked and generating alert
 - no need to alert on addNewFile, as not overwriting data
     - if exists, just return handle of existing file
+- remove functions using handles not names, so don't need to alert on missing
 
 # TODO
 - change tests to new orders

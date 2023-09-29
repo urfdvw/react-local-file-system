@@ -92,8 +92,6 @@ export default function App() {
             <button
                 onClick={async () => {
                     const rootDirectoryHandle = await path2FolderHandles("");
-                    const rawFileHandle = await rootDirectoryHandle.getFileHandle("test_raw.mpy");
-                    const textFileHandle = await rootDirectoryHandle.getFileHandle("test_file");
 
                     console.log("=== Test addNew ===");
                     const newFolder = await addNewFolder(rootDirectoryHandle, "test_new_folder");
@@ -106,18 +104,17 @@ export default function App() {
                     console.log(await getFileText(newFile));
 
                     console.log("=== Test remove file ===");
+                    console.log("reject this one:");
                     await removeEntry(newFolder, newFile);
+                    console.log("new folder content after rejecting removing file:", await getFolderContent(newFolder));
+                    await removeEntry(newFolder, newFile, true);
                     console.log("new folder content after removing file:", await getFolderContent(newFolder));
 
                     console.log("=== Test addRandomFolderTree ===");
                     await addRandomFolderTree(newFolder, 2, 5);
                     console.log(await getFolderTree(newFolder));
-                    await removeEntry(rootDirectoryHandle, newFolder);
+                    await removeEntry(rootDirectoryHandle, newFolder, true);
                     console.log(await getFolderTree(rootDirectoryHandle));
-
-                    console.log("=== Test copyEntry ===");
-                    await copyEntry(rawFileHandle, rootDirectoryHandle, "copied_raw.mpy");
-                    await copyEntry(textFileHandle, rootDirectoryHandle, "copied_text");
                 }}
             >
                 Run Test

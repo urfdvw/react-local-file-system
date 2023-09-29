@@ -113,8 +113,16 @@ export async function addRandomFolderTree(folderHandle, numLayers, numEntries) {
 }
 
 // Delete -----------------------------------------
+export async function removeEntry(parentHandle, entryHandle, force = false) {
+    if (!force) {
+        if (!confirm("Are you sure to remove " + entryHandle.name + " from " + parentHandle.name)) {
+            return;
+        }
+    }
+    _removeEntry(parentHandle, entryHandle);
+}
 
-export async function removeEntry(parentHandle, entryHandle) {
+export async function _removeEntry(parentHandle, entryHandle) {
     // Will not work without https
     if (await isFolder(entryHandle)) {
         await _removeFolder(parentHandle, entryHandle);
@@ -125,7 +133,7 @@ export async function removeEntry(parentHandle, entryHandle) {
 
 export async function _removeFolder(parentHandle, folderHandle) {
     for (const entry of await getFolderContent(folderHandle)) {
-        await removeEntry(folderHandle, entry);
+        await _removeEntry(folderHandle, entry);
     }
     await parentHandle.removeEntry(folderHandle.name);
 }
