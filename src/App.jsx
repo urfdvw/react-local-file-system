@@ -11,6 +11,7 @@ import {
     addNewFile,
     addRandomFolderTree,
     removeEntry,
+    cleanFolder,
     copyEntry,
 } from "./fileSystemUtils";
 
@@ -132,6 +133,17 @@ export default function App() {
                     const copiedHandle = await copyEntry(testFolderHandle, rootDirectoryHandle, "copied tree");
                     console.log("original:", await getFolderTree(testFolderHandle));
                     console.log("copied:", await getFolderTree(copiedHandle));
+                }}
+            >
+                Run Test
+            </button>
+
+            <h3>Test Clean all</h3>
+            <button
+                onClick={async () => {
+                    const rootDirectoryHandle = await path2FolderHandles("");
+                    await cleanFolder(rootDirectoryHandle);
+                    console.log("root:", await getFolderTree(rootDirectoryHandle));
                 }}
             >
                 Run Test

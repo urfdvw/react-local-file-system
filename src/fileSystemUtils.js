@@ -122,10 +122,14 @@ export async function removeEntry(parentHandle, entryHandle) {
     }
 }
 
-export async function _removeFolder(parentHandle, folderHandle) {
-    for (const entry of await getFolderContent(folderHandle)) {
-        await removeEntry(folderHandle, entry);
+export async function cleanFolder(parentHandle) {
+    for (const entry of await getFolderContent(parentHandle)) {
+        await removeEntry(parentHandle, entry);
     }
+}
+
+export async function _removeFolder(parentHandle, folderHandle) {
+    await cleanFolder(folderHandle);
     await parentHandle.removeEntry(folderHandle.name);
 }
 
