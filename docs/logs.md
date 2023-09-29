@@ -26,6 +26,13 @@
 # using single page build 
 - to test out what can be used in single page
 
+# checking existence
+- folder existence is not checked, as dealt in `path2FolderHandles`
+    - recreating existing folder is not fatal 
+- file existence is checked and generating alert
+- no need to alert on addNewFile, as not overwriting data
+    - if exists, just return handle of existing file
+
 # TODO
 - change tests to new orders
 - file name confiliction detect

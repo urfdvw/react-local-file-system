@@ -29,6 +29,10 @@ export async function getFileText(fileHandle) {
 
 // Read -------------------------------
 
+export async function isFolder(entryHandle) {
+    return entryHandle.kind === "directory";
+}
+
 export async function getFolderContent(folderHandle) {
     const layer = [];
     for await (const entry of await folderHandle.values()) {
@@ -49,39 +53,43 @@ export async function getFolderTree(folderHandle) {
     return out;
 }
 
+export async function _checkFileExists(parentHandle, fileName) {
+    try {
+        await parentHandle.getFileHandle(fileName);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export async function alertOnExisting(parentHandle, fileName) {
+    const needsAlert = await _checkFileExists(parentHandle, fileName);
+    if (needsAlert) {
+        alert(fileName + " already exists in " + parentHandle.name);
+    }
+    return needsAlert;
+}
+
+export async function alertOnMissing(parentHandle, fileName) {
+    const needsAlert = !(await _checkFileExists(parentHandle, fileName));
+    if (needsAlert) {
+        alert(fileName + " does not exist in " + parentHandle.name);
+    }
+    return needsAlert;
+}
+
 // Create -------------------------------------
 
-export async function addNewFolder(folderHandle, newFolderName) {
-    return await _addNewEntry(folderHandle, newFolderName, "directory");
+export async function addNewFolder(parentHandle, newFolderName) {
+    return await parentHandle.getDirectoryHandle(newFolderName, {
+        create: true,
+    });
 }
 
-export async function addNewFile(folderHandle, newFileName) {
-    return await _addNewEntry(folderHandle, newFileName, "file");
-}
-
-export async function _addNewEntry(folderHandle, newEntryName, kind) {
-    var newEntryHandle;
-    try {
-        if (kind === "file") {
-            newEntryHandle = await folderHandle.getFileHandle(newEntryName);
-        } else {
-            newEntryHandle = await folderHandle.getDirectoryHandle(newEntryName);
-        }
-        alert(newEntryName + " already exists");
-        return newEntryHandle;
-    } catch {
-        console.log(newEntryName + " does not exist, creating");
-        if (kind === "file") {
-            newEntryHandle = await folderHandle.getFileHandle(newEntryName, {
-                create: true,
-            });
-        } else {
-            newEntryHandle = await folderHandle.getDirectoryHandle(newEntryName, {
-                create: true,
-            });
-        }
-        return newEntryHandle;
-    }
+export async function addNewFile(parentHandle, newFileName) {
+    return await parentHandle.getFileHandle(newFileName, {
+        create: true,
+    });
 }
 
 export async function addRandomFolderTree(folderHandle, numLayers, numEntries) {
@@ -166,10 +174,4 @@ export async function moveToTrash(entryHandle) {
 
 export async function recoverFromTrash(entryHandle) {
     // TODO
-}
-
-// Utils ==========================================
-
-export async function isFolder(entryHandle) {
-    return entryHandle.kind === "directory";
 }
