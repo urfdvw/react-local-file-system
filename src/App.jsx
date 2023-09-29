@@ -127,6 +127,11 @@ export default function App() {
                     console.log("=== Test copyEntry ===");
                     await copyEntry(textFileHandle, rootDirectoryHandle, "copied_text");
                     console.log(await getFolderContent(rootDirectoryHandle));
+                    const testFolderHandle = await addNewFolder(rootDirectoryHandle, "original tree");
+                    await addRandomFolderTree(testFolderHandle, 2, 5);
+                    const copiedHandle = await copyEntry(testFolderHandle, rootDirectoryHandle, "copied tree");
+                    console.log("original:", await getFolderTree(testFolderHandle));
+                    console.log("copied:", await getFolderTree(copiedHandle));
                 }}
             >
                 Run Test

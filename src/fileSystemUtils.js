@@ -137,14 +137,18 @@ export async function _removeFile(parentHandle, fileHandle) {
 
 export async function copyEntry(entryHandle, targetFolderHandle, newName) {
     if (await isFolder(entryHandle)) {
-        await _copyFolder(entryHandle, targetFolderHandle, newName);
+        return await _copyFolder(entryHandle, targetFolderHandle, newName);
     } else {
-        await _copyFile(entryHandle, targetFolderHandle, newName);
+        return await _copyFile(entryHandle, targetFolderHandle, newName);
     }
 }
 
 export async function _copyFolder(folderHandle, targetFolderHandle, newName) {
-    // TODO
+    const newFolderHandle = await addNewFolder(targetFolderHandle, newName);
+    for (const entry of await getFolderContent(folderHandle)) {
+        await copyEntry(entry, newFolderHandle, entry.name);
+    }
+    return newFolderHandle;
 }
 
 async function _copyFile(fileHandle, targetFolderHandle, newName) {
@@ -153,6 +157,7 @@ async function _copyFile(fileHandle, targetFolderHandle, newName) {
     const writable = await newFileHandle.createWritable();
     await writable.write(fileData);
     await writable.close();
+    return newFileHandle;
 }
 
 // Compound (Copy then Delete) ----------------------------------
