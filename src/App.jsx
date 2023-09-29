@@ -13,31 +13,43 @@ import {
 } from "./fileSystemUtils";
 
 export default function App() {
-    const { openDirectory, directoryReady, statusText, path2Handles } = useFileSystem();
+    const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
 
     return (
         <div className="App">
-            <h2>Open dir</h2>
+            <h2>Test useFileSystem features</h2>
             <button onClick={openDirectory}>Open Dir</button>
             <p>statusText: {statusText}</p>
             <p>directoryReady: {directoryReady ? "True" : "False"}</p>
+
+            <button
+                onClick={async () => {
+                    console.log("=== Test path2FolderHandles() ===");
+                    console.log("root folder handle, empty string:", await path2FolderHandles(""));
+                    console.log("root folder handle, '/':", await path2FolderHandles("/"));
+                    console.log("non-exist folder handle:", await path2FolderHandles("grand_parent/parent"));
+                    console.log("non-exist folder handle, create:", await path2FolderHandles("grand_parent/parent", true));
+                    console.log("now existing folder handle:", await path2FolderHandles("grand_parent/parent"));
+                }}
+            >
+                Run Test
+            </button>
+
             <h2>Basic reading tests</h2>
             <p>Need a folder called `test_dir` that has a file called `test_file` with content `test_text`</p>
             <p>Results in the browser console</p>
             <button
                 onClick={async () => {
-                    console.log("=== Test path2Handles() on root folder ===");
                     const { curDirectoryHandle: curDirectoryHandleRoot, fileHandle: fileHandleRoot } =
-                        await path2Handles("/");
+                        await path2FolderHandles("/");
                     console.log("curDirectoryHandleRoot: ", curDirectoryHandleRoot);
                     console.log("fileHandleRoot: ", fileHandleRoot);
 
                     console.log("=== Test getFolderContent() on root folder ===");
                     console.log(await getFolderContent(curDirectoryHandleRoot));
 
-                    console.log("=== Test path2Handles() on file ===");
                     const { curDirectoryHandle: curDirectoryHandleTestFile, fileHandle: fileHandleTestFile } =
-                        await path2Handles("/test_file");
+                        await path2FolderHandles("/test_file");
                     console.log("curDirectoryHandle: ", curDirectoryHandleTestFile);
                     console.log("fileHandle: ", fileHandleTestFile);
 
@@ -52,16 +64,16 @@ export default function App() {
             >
                 Run Test
             </button>
+
             <h2>Other tests</h2>
             <p>Once basic reading is reliable, other features can be tested. </p>
             <p>Results in the browser console</p>
             <button
                 onClick={async () => {
-                    const { curDirectoryHandle: rootDirectoryHandle, fileHandle: rawFileHandle } = await path2Handles(
-                        "/test_raw.mpy"
-                    );
+                    const { curDirectoryHandle: rootDirectoryHandle, fileHandle: rawFileHandle } =
+                        await path2FolderHandles("/test_raw.mpy");
                     const { curDirectoryHandle: rootDirectoryHandleDuplicated, fileHandle: textFileHandle } =
-                        await path2Handles("/test_file");
+                        await path2FolderHandles("/test_file");
 
                     console.log("=== Test addNew ===");
                     const newFolder = await addNewFolder(rootDirectoryHandle, "test_new_folder");

@@ -52,32 +52,32 @@ const useFileSystem = () => {
     }
 
     // Get Handles under root
-    async function path2Handles(path, opt) {
-        if (!opt) {
-            opt = {};
-        }
+    async function path2FolderHandles(path = "", create = false) {
         // change windows path to the world standard
         path.replace("\\", "/");
         // split path to levels
-        const levels = path.split("/").map((l) => l.trim());
+        const levels = path.split("/").map((level) => level.trim());
         // get dir handle
-        let curDirectoryHandle = rootDirHandle;
-        for (const l of levels.slice(0, -1)) {
-            if (l) {
-                console.log("l", [l]);
-                curDirectoryHandle = await curDirectoryHandle.getDirectoryHandle(l);
+        let folderHandle = rootDirHandle;
+        for (const level of levels) {
+            if (level.length !== 0) {
+                try {
+                    folderHandle = await folderHandle.getDirectoryHandle(level, { create: create });
+                } catch {
+                    // if not found
+                    alert(path + "does not exist");
+                    return;
+                }
             }
         }
-        // get file handle
-        const fileHandle = levels.at(-1) === "" ? null : await curDirectoryHandle.getFileHandle(levels.at(-1), opt);
-        return { curDirectoryHandle, fileHandle };
+        return folderHandle;
     }
 
     return {
         openDirectory,
         directoryReady,
         statusText,
-        path2Handles,
+        path2FolderHandles,
     };
 };
 
