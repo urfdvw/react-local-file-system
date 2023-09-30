@@ -147,8 +147,10 @@ export async function copyEntry(entryHandle, targetFolderHandle, newName) {
     }
 }
 
-export async function backupFolder(folderHandle, newFolderHandle) {
-    await cleanFolder(newFolderHandle);
+export async function backupFolder(folderHandle, newFolderHandle, clean = false) {
+    if (clean) {
+        await cleanFolder(newFolderHandle);
+    }
     for (const entry of await getFolderContent(folderHandle)) {
         await copyEntry(entry, newFolderHandle, entry.name);
     }
@@ -171,20 +173,14 @@ async function _copyFile(fileHandle, targetFolderHandle, newName) {
 
 // Compound (Copy then Delete) ----------------------------------
 
-export async function renameEntry(entryHandle) {
-    // TODO
+export async function renameEntry(parentHandle, entryHandle, newName) {
+    const newEntryHandle = await copyEntry(entryHandle, parentHandle, newName);
+    await removeEntry(parentHandle, entryHandle);
+    return newEntryHandle;
 }
 
-export async function moveEntry(entryHandle, fromFolderHandle, toFolderHandle) {
-    // TODO
-}
-
-// Trash bin ----------------------------------
-
-export async function moveToTrash(entryHandle) {
-    // TODO
-}
-
-export async function recoverFromTrash(entryHandle) {
-    // TODO
+export async function moveEntry(parentHandle, entryHandle, targetFolderHandle) {
+    const newEntryHandle = await copyEntry(entryHandle, targetFolderHandle, entryHandle.name);
+    await removeEntry(parentHandle, entryHandle);
+    return newEntryHandle;
 }

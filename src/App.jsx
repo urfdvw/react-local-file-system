@@ -14,6 +14,8 @@ import {
     cleanFolder,
     copyEntry,
     backupFolder,
+    renameEntry,
+    moveEntry,
 } from "./fileSystemUtils";
 
 export default function App() {
@@ -149,11 +151,53 @@ export default function App() {
             <p>statusText: {statusTextBackup}</p>
             <button
                 onClick={async () => {
+                    console.log("=== Test backupFolder ===");
                     const rootDirectoryHandle = await path2FolderHandles("");
                     const backupDirectoryHandle = await path2FolderHandlesBackup("");
-                    await backupFolder(rootDirectoryHandle, backupDirectoryHandle);
+                    await backupFolder(rootDirectoryHandle, backupDirectoryHandle, true);
                     console.log("original:", await getFolderTree(rootDirectoryHandle));
                     console.log("copied:", await getFolderTree(backupDirectoryHandle));
+                }}
+            >
+                Run Test
+            </button>
+
+            <h3>Test Compound Utils</h3>
+            <button
+                onClick={async () => {
+                    const rootDirectoryHandle = await path2FolderHandles("");
+                    const testFile = await rootDirectoryHandle.getFileHandle("test_file");
+
+                    console.log("=== Test rename file ===");
+                    const renamedFileHandle = await renameEntry(rootDirectoryHandle, testFile, "renamed_file");
+                    console.log(await getFolderContent(rootDirectoryHandle));
+                    console.log(await getFileText(renamedFileHandle));
+
+                    console.log("=== Test move file ===");
+                    const deepFolderHandle = await path2FolderHandles("test_dir/test_sub_dir");
+                    const movedFileHandle = await moveEntry(rootDirectoryHandle, renamedFileHandle, deepFolderHandle);
+                    console.log(await getFolderContent(deepFolderHandle));
+                    console.log(await getFileText(movedFileHandle));
+
+                    console.log("=== Test rename folder ===");
+                    const testFileHandle = await path2FolderHandles("test_dir");
+                    const renamedFolderHandle = await renameEntry(
+                        rootDirectoryHandle,
+                        testFileHandle,
+                        "renamed_folder"
+                    );
+                    console.log(await getFolderContent(rootDirectoryHandle));
+                    console.log(await getFolderTree(renamedFolderHandle));
+
+                    console.log("=== Test move folder ===");
+                    const subFolderHandle = await path2FolderHandles("renamed_folder/test_sub_dir");
+                    const movedFolderHandle = await moveEntry(
+                        renamedFolderHandle,
+                        subFolderHandle,
+                        rootDirectoryHandle
+                    );
+                    console.log(await getFolderContent(movedFolderHandle));
+                    console.log(await getFolderTree(rootDirectoryHandle));
                 }}
             >
                 Run Test

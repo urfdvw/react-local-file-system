@@ -35,6 +35,6 @@
 - remove functions using handles not names, so don't need to alert on missing
 - let app level, not util level, worry about the alerts when danger actions happen
 
-# TODO
-- change tests to new orders
-- file name confiliction detect
+# trash bin features
+- should be part of the hook, as need file structure.
+- also, backlogged
