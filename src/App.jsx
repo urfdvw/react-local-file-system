@@ -1,10 +1,24 @@
 import Test from "./Test";
+import FolderView from "./FolderView";
+import useFileSystem from "./useFileSystem";
+import { getFileText } from "./fileSystemUtils";
 
 export default function App() {
-    switch (window.location.pathname) {
-        case "/test":
-            return <Test />;
-        default:
-            return "Hi";
+    if (window.location.pathname === "/test") {
+        return <Test />;
     }
+    const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
+
+    async function onFileClick(fileHandle) {
+        console.log(await getFileText(fileHandle));
+    }
+
+    return (
+        <>
+            <button onClick={openDirectory}>Open Dir</button>
+            <p>statusText: {statusText}</p>
+            <p>directoryReady: {directoryReady ? "True" : "False"}</p>
+            <FolderView path2FolderHandles={path2FolderHandles} onFileClick={onFileClick} />
+        </>
+    );
 }
