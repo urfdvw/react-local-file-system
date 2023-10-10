@@ -17,10 +17,13 @@ const useFileSystem = () => {
     // statusText
     useEffect(() => {
         setStatusText(() => {
+            if (!rootDirHandle) {
+                return "No Directory Connected";
+            }
             if (!directoryReady) {
-                return "No Directory Connected!";
+                return "Connection Lost";
             } else {
-                const info = " connected to " + rootDirHandle.name;
+                const info = "Connected to " + rootDirHandle.name;
                 return info;
             }
         });

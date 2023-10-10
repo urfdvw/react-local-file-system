@@ -38,3 +38,8 @@
 # trash bin features
 - should be part of the hook, as need file structure.
 - also, backlogged
+
+# project structure
+- Prepare for the folder view Component
+- Use basic routing via "window.location.pathname"
+- changed the connection message to include "connection lost info"
