@@ -1,4 +1,4 @@
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Button } from "@mui/material";
 import List from "@mui/material/List";
@@ -14,6 +14,16 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import {
+    isFolder,
+    getFolderContent,
+    addNewFolder,
+    addNewFile,
+    removeEntry,
+    copyEntry,
+    renameEntry,
+    moveEntry,
+} from "./fileSystemUtils";
 
 // wrapper
 
@@ -70,43 +80,10 @@ function ApplyContextMenu({ children, items }) {
     );
 }
 
-function ApplyRenameDuplicateRemoveMenu({ children, renameHandler, duplicateHandler, removeHandler }) {
-    const items = [
-        {
-            name: "rename",
-            handler: () => {
-                console.log("rename handler called");
-                renameHandler();
-            },
-        },
-        {
-            name: "duplicate",
-            handler: () => {
-                console.log("duplicate handler called");
-                duplicateHandler();
-            },
-        },
-        {
-            name: "remove",
-            handler: () => {
-                console.log("remove handler called");
-                removeHandler();
-            },
-        },
-    ];
-
-    return <ApplyContextMenu items={items}>{children}</ApplyContextMenu>;
-}
-
 function ApplyDrop({ children, onDropHandler }) {
     return (
         <div
-            onDrop={(event) => {
-                console.log("onDrop");
-                console.log(event);
-                console.log(JSON.parse(event.dataTransfer.getData("data")));
-                onDropHandler();
-            }}
+            onDrop={onDropHandler}
             onDragOver={(event) => {
                 event.preventDefault(); // to allow drop
             }}
@@ -117,57 +94,95 @@ function ApplyDrop({ children, onDropHandler }) {
 }
 
 // Entry
+Object.defineProperty(Date.prototype, "YYYYMMDDHHMMSS", {
+    // https://stackoverflow.com/a/19449076/7037749
+    value: function () {
+        function pad2(n) {
+            // always returns a string
+            return (n < 10 ? "0" : "") + n;
+        }
 
-function ContentEntry({
-    isFolder,
-    entryName,
-    onClickHandler,
-    onDragHandler,
-    onDropHandler,
-    renameHandler,
-    duplicateHandler,
-    removeHandler,
-}) {
+        return (
+            this.getFullYear() +
+            pad2(this.getMonth() + 1) +
+            pad2(this.getDate()) +
+            pad2(this.getHours()) +
+            pad2(this.getMinutes()) +
+            pad2(this.getSeconds())
+        );
+    },
+});
+
+function ContentEntry({ entryHandle }) {
+    const { currentFolderHandle: parentHandle, onFileClick, showFolderView } = useContext(FolderContent);
+    const { setEntryOnDrag, handleDrop } = useContext(DragContext);
+    // handler
     const items = [
         {
             name: "rename",
             handler: () => {
                 console.log("rename handler called");
-                renameHandler();
+                const names = getFolderContent(parentHandle).map((entry) => {
+                    entry.name;
+                });
+                let newName = "";
+                while (true) {
+                    let info = "";
+                    if (isFolder(entryHandle)) {
+                        info = "Please enter a new folder name";
+                    } else {
+                        info = "Please enter a new file name including extension";
+                    }
+                    newName = prompt(info, entryHandle.name);
+                    if (newName == null || newName == "") {
+                        return;
+                    } else {
+                        if (!names.includes(newName)) {
+                            break;
+                        }
+                    }
+                }
+                renameEntry(parentHandle, entryHandle);
             },
         },
         {
             name: "duplicate",
             handler: () => {
                 console.log("duplicate handler called");
-                duplicateHandler();
+                const now = new Date();
+                copyEntry(entryHandle, parentHandle, entryHandle.name + "_copy_" + now.YYYYMMDDHHMMSS());
             },
         },
         {
             name: "remove",
             handler: () => {
                 console.log("remove handler called");
-                removeHandler();
+                removeEntry(parentHandle, entryHandle);
             },
         },
     ];
+    function onClickHandler(event) {
+        console.log(event);
+        if (isFolder(entryHandle)) {
+            showFolderView(entryHandle);
+        } else {
+            onFileClick(entryHandle);
+        }
+    }
+    function onDragHandler(event) {
+        console.log(event);
+        setEntryOnDrag(entryHandle);
+    }
+    function onDropHandler(event) {
+        console.log(event);
+        handleDrop(entryHandle);
+    }
     const entry = (
         <ApplyContextMenu items={items}>
             <ListItem disablePadding>
-                <ListItemButton
-                    onClick={(event) => {
-                        onClickHandler();
-                    }}
-                >
+                <ListItemButton onClick={onClickHandler}>
                     <ListItemIcon>{isFolder ? <FolderIcon /> : <InsertDriveFileIcon />}</ListItemIcon>
-                    <ListItemText
-                        draggable={true}
-                        onDragStart={(event) => {
-                            event.dataTransfer.setData("data", JSON.stringify({ name: entryName })); // data has to be string
-                            onDragHandler();
-                        }}
-                        primary={entryName}
-                    />
+                    <ListItemText draggable={true} onDragStart={onDragHandler} primary={entryHandle.name} />
                 </ListItemButton>
             </ListItem>
         </ApplyContextMenu>
@@ -175,43 +190,44 @@ function ContentEntry({
     return isFolder ? <ApplyDrop onDropHandler={onDropHandler}>{entry}</ApplyDrop> : entry;
 }
 
-function PathEntry({ name, onClickHandler, onDropHandler }) {
+function PathEntry({ entryHandle }) {
+    const { showFolderView } = useContext(FolderContent);
+    const { handleDrop } = useContext(DragContext);
+    function onDropHandler(event) {
+        console.log(event);
+        handleDrop(entryHandle);
+    }
+    function onClickHandler(event) {
+        console.log(event);
+        showFolderView(entryHandle);
+    }
     return (
         <ApplyDrop onDropHandler={onDropHandler}>
             <Button size="small" onClick={onClickHandler} sx={{ minWidth: 10 }}>
-                {name}
+                {entryHandle.name}
             </Button>
         </ApplyDrop>
     );
 }
 
-// 1st level modules
-
-function FolderPath() {
-    return (
-        <>
-            <Breadcrumbs aria-label="breadcrumb">
-                <PathEntry name="hi" />
-                <PathEntry name="there" />
-            </Breadcrumbs>
-            <Divider />
-        </>
-    );
-}
-
-function FolderContent() {
-    return (
-        <List>
-            <ContentEntry isFolder={true} entryName="a folder" />
-            <ContentEntry isFolder={false} entryName="a file" />
-        </List>
-    );
-}
-
 function AddEntry() {
+    const { currentFolderHandle: parentHandle } = useContext(CurFolderContext);
+    const now = new Date();
     const actions = [
-        { icon: <InsertDriveFileIcon />, name: "new file" },
-        { icon: <FolderIcon />, name: "new folder" },
+        {
+            icon: <InsertDriveFileIcon />,
+            name: "new file",
+            handler: () => {
+                addNewFile(parentHandle, "new_file_" + now.YYYYMMDDHHMMSS());
+            },
+        },
+        {
+            icon: <FolderIcon />,
+            name: "new folder",
+            handler: () => {
+                addNewFolder(parentHandle, "new_folder_" + now.YYYYMMDDHHMMSS());
+            },
+        },
     ];
     return (
         <SpeedDial
@@ -229,18 +245,55 @@ function AddEntry() {
 // over all
 
 const CurFolderContext = createContext();
+const DragContext = createContext();
 
-function FolderView({ onFileClick }) {
+function FolderView({ path2FolderHandles, onFileClick }) {
     const [currentFolderHandle, setCurrentFolderHandle] = useState();
-    function showFolderView(folderHandle) {
+    const [entryOnDrag, setEntryOnDrag] = useState();
+    const [path, setPath] = useState([]);
+    const [content, setContent] = useState([]);
+    useEffect(() => {
+        async function showRoot() {
+            const root = await path2FolderHandles("");
+            await showFolderView(root);
+        }
+        showRoot();
+    }, []);
+    async function showFolderView(folderHandle) {
         setCurrentFolderHandle(folderHandle);
+        setContent(await getFolderContent(folderHandle));
+        if (folderHandle in path) {
+            //TODO
+            //set path to until folderHandle
+        } else {
+            setPath((curPath) => {
+                [...path, folderHandle];
+            });
+        }
         console.log(folderHandle.name);
     }
+    function handleDrop(targetFolder) {
+        if (targetFolder.isSameEntry(entryOnDrag)) {
+            return;
+        }
+        moveEntry(currentFolderHandle, entryOnDrag, targetFolder);
+    }
     return (
-        <CurFolderContext.Provider value={{ currentFolderHandle, showFolderView }}>
-            <FolderPath />
-            <FolderContent />
-            <AddEntry />
+        <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView }}>
+            <DragContext.Provider value={{ setEntryOnDrag, handleDrop }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    {path.map((entry) => (
+                        <PathEntry entryHandle={entry} key={crypto.randomUUID()} />
+                    ))}
+                </Breadcrumbs>
+                <Divider />
+                <List>
+                    {content.map((entry) => (
+                        <ContentEntry entryHandle={entry} key={crypto.randomUUID()} />
+                    ))}
+                </List>
+                <AddEntry />
+            </DragContext.Provider>
         </CurFolderContext.Provider>
     );
 }
