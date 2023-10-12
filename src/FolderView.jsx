@@ -1,5 +1,4 @@
-import * as React from "react";
-import Typography from "@mui/material/Typography";
+import { useState, createContext, useContext } from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Button } from "@mui/material";
 import List from "@mui/material/List";
@@ -19,7 +18,7 @@ import MenuItem from "@mui/material/MenuItem";
 // wrapper
 
 function ApplyContextMenu({ children, items }) {
-    const [contextMenu, setContextMenu] = React.useState(null);
+    const [contextMenu, setContextMenu] = useState(null);
 
     const handleContextMenu = (event) => {
         event.preventDefault();
@@ -71,24 +70,27 @@ function ApplyContextMenu({ children, items }) {
     );
 }
 
-function ApplyRenameDuplicateRemoveMenu({ children }) {
+function ApplyRenameDuplicateRemoveMenu({ children, renameHandler, duplicateHandler, removeHandler }) {
     const items = [
         {
             name: "rename",
             handler: () => {
                 console.log("rename handler called");
+                renameHandler();
             },
         },
         {
             name: "duplicate",
             handler: () => {
                 console.log("duplicate handler called");
+                duplicateHandler();
             },
         },
         {
             name: "remove",
             handler: () => {
                 console.log("remove handler called");
+                removeHandler();
             },
         },
     ];
@@ -96,13 +98,14 @@ function ApplyRenameDuplicateRemoveMenu({ children }) {
     return <ApplyContextMenu items={items}>{children}</ApplyContextMenu>;
 }
 
-function ApplyDrop({ children }) {
+function ApplyDrop({ children, onDropHandler }) {
     return (
         <div
             onDrop={(event) => {
                 console.log("onDrop");
                 console.log(event);
                 console.log(JSON.parse(event.dataTransfer.getData("data")));
+                onDropHandler();
             }}
             onDragOver={(event) => {
                 event.preventDefault(); // to allow drop
@@ -115,31 +118,67 @@ function ApplyDrop({ children }) {
 
 // Entry
 
-function ContentEntry({ isFolder, entryName }) {
+function ContentEntry({
+    isFolder,
+    entryName,
+    onClickHandler,
+    onDragHandler,
+    onDropHandler,
+    renameHandler,
+    duplicateHandler,
+    removeHandler,
+}) {
+    const items = [
+        {
+            name: "rename",
+            handler: () => {
+                console.log("rename handler called");
+                renameHandler();
+            },
+        },
+        {
+            name: "duplicate",
+            handler: () => {
+                console.log("duplicate handler called");
+                duplicateHandler();
+            },
+        },
+        {
+            name: "remove",
+            handler: () => {
+                console.log("remove handler called");
+                removeHandler();
+            },
+        },
+    ];
     const entry = (
-        <ApplyRenameDuplicateRemoveMenu>
+        <ApplyContextMenu items={items}>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton
+                    onClick={(event) => {
+                        onClickHandler();
+                    }}
+                >
                     <ListItemIcon>{isFolder ? <FolderIcon /> : <InsertDriveFileIcon />}</ListItemIcon>
                     <ListItemText
                         draggable={true}
                         onDragStart={(event) => {
-                            // event.preventDefault();
                             event.dataTransfer.setData("data", JSON.stringify({ name: entryName })); // data has to be string
+                            onDragHandler();
                         }}
                         primary={entryName}
                     />
                 </ListItemButton>
             </ListItem>
-        </ApplyRenameDuplicateRemoveMenu>
+        </ApplyContextMenu>
     );
-    return isFolder ? <ApplyDrop>{entry}</ApplyDrop> : entry;
+    return isFolder ? <ApplyDrop onDropHandler={onDropHandler}>{entry}</ApplyDrop> : entry;
 }
 
-function PathEntry({ name, handler }) {
+function PathEntry({ name, onClickHandler, onDropHandler }) {
     return (
-        <ApplyDrop>
-            <Button size="small" onClick={handler} sx={{ minWidth: 10 }}>
+        <ApplyDrop onDropHandler={onDropHandler}>
+            <Button size="small" onClick={onClickHandler} sx={{ minWidth: 10 }}>
                 {name}
             </Button>
         </ApplyDrop>
@@ -189,13 +228,20 @@ function AddEntry() {
 
 // over all
 
-function FolderView({path2FolderHandles, onFileClick}) {
+const CurFolderContext = createContext();
+
+function FolderView({ onFileClick }) {
+    const [currentFolderHandle, setCurrentFolderHandle] = useState();
+    function showFolderView(folderHandle) {
+        setCurrentFolderHandle(folderHandle);
+        console.log(folderHandle.name);
+    }
     return (
-        <div>
+        <CurFolderContext.Provider value={{ currentFolderHandle, showFolderView }}>
             <FolderPath />
             <FolderContent />
             <AddEntry />
-        </div>
+        </CurFolderContext.Provider>
     );
 }
 

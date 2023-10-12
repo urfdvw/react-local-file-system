@@ -16,9 +16,12 @@ export default function App() {
     return (
         <>
             <button onClick={openDirectory}>Open Dir</button>
-            <p>statusText: {statusText}</p>
-            <p>directoryReady: {directoryReady ? "True" : "False"}</p>
-            <FolderView path2FolderHandles={path2FolderHandles} onFileClick={onFileClick} />
+            <br />
+            {directoryReady ? (
+                <FolderView path2FolderHandles={path2FolderHandles} onFileClick={onFileClick} />
+            ) : (
+                statusText
+            )}
         </>
     );
 }

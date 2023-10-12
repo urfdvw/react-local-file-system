@@ -21,7 +21,7 @@ const useFileSystem = () => {
                 return "No Directory Connected";
             }
             if (!directoryReady) {
-                return "Connection Lost";
+                return "Connecting";
             } else {
                 const info = "Connected to " + rootDirHandle.name;
                 return info;
