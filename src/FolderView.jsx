@@ -196,8 +196,8 @@ function PathEntry({ entryHandle }) {
     }
     return (
         <ApplyDrop onDropHandler={onDropHandler}>
-            <Button size="small" onClick={onClickHandler} sx={{ minWidth: 10 }}>
-                {entryHandle.name}
+            <Button size="small" onClick={onClickHandler} sx={{ minWidth: 10, textTransform: "none" }}>
+                {entryHandle.name ? entryHandle.name : "ROOT"}
             </Button>
         </ApplyDrop>
     );
@@ -228,7 +228,7 @@ function AddEntry() {
     return (
         <SpeedDial
             ariaLabel="SpeedDial basic example"
-            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            sx={{ position: "fixed", bottom: 16, right: 16 }}
             icon={<SpeedDialIcon />}
         >
             {actions.map((action) => (
