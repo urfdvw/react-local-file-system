@@ -12,7 +12,7 @@ export default function App() {
     const [rootFolder, setRootFolder] = useState();
 
     async function onFileClick(fileHandle) {
-        console.log(await getFileText(fileHandle));
+        console.log("file content of", fileHandle.name, ":", await getFileText(fileHandle));
     }
 
     async function onOpenHandler() {

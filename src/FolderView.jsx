@@ -130,8 +130,8 @@ function ContentEntry({ entryHandle }) {
     const items = [
         {
             name: "rename",
-            handler: async () => {
-                console.log("rename handler called");
+            handler: async (event) => {
+                console.log("ContentEntry rename handler called", event);
                 const newName = prompt("new name", entryHandle.name);
                 await renameEntry(currentFolderHandle, entryHandle, newName);
                 await showFolderView(currentFolderHandle);
@@ -139,23 +139,23 @@ function ContentEntry({ entryHandle }) {
         },
         {
             name: "duplicate",
-            handler: async () => {
-                console.log("duplicate handler called");
+            handler: async (event) => {
+                console.log("ContentEntry duplicate handler called", event);
                 await copyEntry(entryHandle, currentFolderHandle, entryHandle.name + "_copy_" + dateString());
                 await showFolderView(currentFolderHandle);
             },
         },
         {
             name: "remove",
-            handler: async () => {
-                console.log("remove handler called");
+            handler: async (event) => {
+                console.log("ContentEntry remove handler called", event);
                 await removeEntry(currentFolderHandle, entryHandle);
                 await showFolderView(currentFolderHandle);
             },
         },
     ];
     function onClickHandler(event) {
-        console.log(event);
+        console.log("ContentEntry onClickHandler called", event);
         if (isFolder(entryHandle)) {
             showFolderView(entryHandle);
         } else {
@@ -163,11 +163,11 @@ function ContentEntry({ entryHandle }) {
         }
     }
     function onDragHandler(event) {
-        console.log(event);
+        console.log("ContentEntry onDragHandler called", event);
         setEntryOnDrag(entryHandle);
     }
     function onDropHandler(event) {
-        console.log(event);
+        console.log("ContentEntry onDropHandler called", event);
         handleDrop(entryHandle);
     }
     const entry = (
@@ -187,11 +187,11 @@ function PathEntry({ entryHandle }) {
     const { showFolderView } = useContext(CurFolderContext);
     const { handleDrop } = useContext(DragContext);
     function onDropHandler(event) {
-        console.log(event);
+        console.log("PathEntry onDropHandler called", event);
         handleDrop(entryHandle);
     }
     function onClickHandler(event) {
-        console.log(event);
+        console.log("PathEntry onClickHandler called", event);
         showFolderView(entryHandle);
     }
     return (
@@ -209,7 +209,8 @@ function AddEntry() {
         {
             icon: <InsertDriveFileIcon />,
             name: "new file",
-            handler: async () => {
+            handler: async (event) => {
+                console.log("AddEntry new file called", event);
                 await addNewFile(currentFolderHandle, "new_file_" + dateString());
                 await showFolderView(currentFolderHandle);
             },
@@ -217,7 +218,8 @@ function AddEntry() {
         {
             icon: <FolderIcon />,
             name: "new folder",
-            handler: async () => {
+            handler: async (event) => {
+                console.log("AddEntry new folder called", event);
                 addNewFolder(currentFolderHandle, "new_folder_" + dateString());
                 await showFolderView(currentFolderHandle);
             },
@@ -265,8 +267,7 @@ function FolderView({ rootFolder, onFileClick }) {
         // set path
         // if folderHandle in path, cut what ever behind it
         for (var i = 0; i < path.length; i++) {
-            console.log(i);
-            if (folderHandle.isSameEntry(path[i])) {
+            if (await folderHandle.isSameEntry(path[i])) {
                 setPath((curPath) => {
                     return curPath.slice(0, i + 1);
                 });
@@ -274,14 +275,12 @@ function FolderView({ rootFolder, onFileClick }) {
             }
         }
         // else, append folderHandle at the back
-
-        console.log("-----------------");
         setPath((curPath) => {
             return [...curPath, folderHandle];
         });
     }
     async function handleDrop(targetFolder) {
-        if (targetFolder.isSameEntry(entryOnDrag)) {
+        if (await targetFolder.isSameEntry(entryOnDrag)) {
             return;
         }
         await moveEntry(currentFolderHandle, entryOnDrag, targetFolder);
@@ -297,9 +296,25 @@ function FolderView({ rootFolder, onFileClick }) {
                 </Breadcrumbs>
                 <Divider />
                 <List>
-                    {content.map((entry) => (
-                        <ContentEntry entryHandle={entry} key={crypto.randomUUID()} />
-                    ))}
+                    {content
+                        .sort((a, b) => {
+                            if (isFolder(a) && !isFolder(b)) {
+                                return -1;
+                            }
+                            if (!isFolder(a) && isFolder(b)) {
+                                return 1;
+                            }
+                            if (a.name < b.name) {
+                                return -1;
+                            }
+                            if (a.name > b.name) {
+                                return 1;
+                            }
+                            return 0;
+                        })
+                        .map((entry) => (
+                            <ContentEntry entryHandle={entry} key={crypto.randomUUID()} />
+                        ))}
                 </List>
                 <AddEntry />
             </DragContext.Provider>
