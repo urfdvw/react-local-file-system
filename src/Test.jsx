@@ -84,8 +84,8 @@ export default function Test() {
                     console.log(await getFolderTree(rootHandle));
 
                     console.log("=== Test isFolder() ===");
-                    console.log("from test_dir: ", await isFolder(rootHandle));
-                    console.log("from test_file: ", await isFolder(testFileHandle));
+                    console.log("from test_dir: ", isFolder(rootHandle));
+                    console.log("from test_file: ", isFolder(testFileHandle));
 
                     console.log("=== Test checking file existence ===");
                     console.log("should be true", await checkFileExists(rootHandle, testFileName));

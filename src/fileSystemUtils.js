@@ -20,7 +20,7 @@ export async function getFileText(fileHandle) {
 
 // Read -------------------------------
 
-export async function isFolder(entryHandle) {
+export function isFolder(entryHandle) {
     return entryHandle.kind === "directory";
 }
 
@@ -28,7 +28,7 @@ export async function isEntryHealthy(entryHandle) {
     if (entryHandle === null) {
         return false;
     }
-    if (await isFolder(entryHandle)) {
+    if (isFolder(entryHandle)) {
         try {
             // eslint-disable-next-line no-unused-vars
             for await (const [key, value] of entryHandle.entries()) {
@@ -62,7 +62,7 @@ export async function getFolderTree(folderHandle) {
         out.push({
             parent: folderHandle,
             handle: entry,
-            children: (await isFolder(entry)) ? await getFolderTree(entry) : null,
+            children: (isFolder(entry)) ? await getFolderTree(entry) : null,
         });
     }
     return out;
@@ -71,6 +71,15 @@ export async function getFolderTree(folderHandle) {
 export async function checkFileExists(parentHandle, fileName) {
     try {
         await parentHandle.getFileHandle(fileName);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export async function checkFolderExists(parentHandle, folderName) {
+    try {
+        await parentHandle.getDirectoryHandle(folderName);
         return true;
     } catch {
         return false;
@@ -115,7 +124,7 @@ export async function addRandomFolderTree(folderHandle, numLayers, numEntries) {
 
 export async function removeEntry(parentHandle, entryHandle) {
     // Will not work without https
-    if (await isFolder(entryHandle)) {
+    if (isFolder(entryHandle)) {
         await _removeFolder(parentHandle, entryHandle);
     } else {
         await _removeFile(parentHandle, entryHandle);
@@ -140,7 +149,7 @@ export async function _removeFile(parentHandle, fileHandle) {
 // Copy --------------------------------------
 
 export async function copyEntry(entryHandle, targetFolderHandle, newName) {
-    if (await isFolder(entryHandle)) {
+    if (isFolder(entryHandle)) {
         return await _copyFolder(entryHandle, targetFolderHandle, newName);
     } else {
         return await _copyFile(entryHandle, targetFolderHandle, newName);

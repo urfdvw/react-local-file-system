@@ -17,6 +17,8 @@ import MenuItem from "@mui/material/MenuItem";
 import {
     isFolder,
     getFolderContent,
+    checkFileExists,
+    checkFolderExists,
     addNewFolder,
     addNewFile,
     removeEntry,
@@ -24,6 +26,32 @@ import {
     renameEntry,
     moveEntry,
 } from "./fileSystemUtils";
+
+//util
+function dateString() {
+    try {
+        Object.defineProperty(Date.prototype, "YYYYMMDDHHMMSS", {
+            // https://stackoverflow.com/a/19449076/7037749
+            value: function () {
+                function pad2(n) {
+                    // always returns a string
+                    return (n < 10 ? "0" : "") + n;
+                }
+
+                return (
+                    this.getFullYear() +
+                    pad2(this.getMonth() + 1) +
+                    pad2(this.getDate()) +
+                    pad2(this.getHours()) +
+                    pad2(this.getMinutes()) +
+                    pad2(this.getSeconds())
+                );
+            },
+        });
+    } catch {}
+    const now = new Date();
+    return now.YYYYMMDDHHMMSS();
+}
 
 // wrapper
 
@@ -94,70 +122,35 @@ function ApplyDrop({ children, onDropHandler }) {
 }
 
 // Entry
-Object.defineProperty(Date.prototype, "YYYYMMDDHHMMSS", {
-    // https://stackoverflow.com/a/19449076/7037749
-    value: function () {
-        function pad2(n) {
-            // always returns a string
-            return (n < 10 ? "0" : "") + n;
-        }
-
-        return (
-            this.getFullYear() +
-            pad2(this.getMonth() + 1) +
-            pad2(this.getDate()) +
-            pad2(this.getHours()) +
-            pad2(this.getMinutes()) +
-            pad2(this.getSeconds())
-        );
-    },
-});
 
 function ContentEntry({ entryHandle }) {
-    const { currentFolderHandle: parentHandle, onFileClick, showFolderView } = useContext(FolderContent);
+    const { currentFolderHandle, onFileClick, showFolderView } = useContext(CurFolderContext);
     const { setEntryOnDrag, handleDrop } = useContext(DragContext);
     // handler
     const items = [
         {
             name: "rename",
-            handler: () => {
+            handler: async () => {
                 console.log("rename handler called");
-                const names = getFolderContent(parentHandle).map((entry) => {
-                    entry.name;
-                });
-                let newName = "";
-                while (true) {
-                    let info = "";
-                    if (isFolder(entryHandle)) {
-                        info = "Please enter a new folder name";
-                    } else {
-                        info = "Please enter a new file name including extension";
-                    }
-                    newName = prompt(info, entryHandle.name);
-                    if (newName == null || newName == "") {
-                        return;
-                    } else {
-                        if (!names.includes(newName)) {
-                            break;
-                        }
-                    }
-                }
-                renameEntry(parentHandle, entryHandle);
+                const newName = prompt("new name", entryHandle.name);
+                await renameEntry(currentFolderHandle, entryHandle, newName);
+                await showFolderView(currentFolderHandle);
             },
         },
         {
             name: "duplicate",
-            handler: () => {
+            handler: async () => {
                 console.log("duplicate handler called");
-                const now = new Date();
-                copyEntry(entryHandle, parentHandle, entryHandle.name + "_copy_" + now.YYYYMMDDHHMMSS());
+                await copyEntry(entryHandle, currentFolderHandle, entryHandle.name + "_copy_" + dateString());
+                await showFolderView(currentFolderHandle);
             },
         },
         {
             name: "remove",
-            handler: () => {
+            handler: async () => {
                 console.log("remove handler called");
-                removeEntry(parentHandle, entryHandle);
+                await removeEntry(currentFolderHandle, entryHandle);
+                await showFolderView(currentFolderHandle);
             },
         },
     ];
@@ -181,17 +174,17 @@ function ContentEntry({ entryHandle }) {
         <ApplyContextMenu items={items}>
             <ListItem disablePadding>
                 <ListItemButton onClick={onClickHandler}>
-                    <ListItemIcon>{isFolder ? <FolderIcon /> : <InsertDriveFileIcon />}</ListItemIcon>
+                    <ListItemIcon>{isFolder(entryHandle) ? <FolderIcon /> : <InsertDriveFileIcon />}</ListItemIcon>
                     <ListItemText draggable={true} onDragStart={onDragHandler} primary={entryHandle.name} />
                 </ListItemButton>
             </ListItem>
         </ApplyContextMenu>
     );
-    return isFolder ? <ApplyDrop onDropHandler={onDropHandler}>{entry}</ApplyDrop> : entry;
+    return isFolder(entryHandle) ? <ApplyDrop onDropHandler={onDropHandler}>{entry}</ApplyDrop> : entry;
 }
 
 function PathEntry({ entryHandle }) {
-    const { showFolderView } = useContext(FolderContent);
+    const { showFolderView } = useContext(CurFolderContext);
     const { handleDrop } = useContext(DragContext);
     function onDropHandler(event) {
         console.log(event);
@@ -211,21 +204,22 @@ function PathEntry({ entryHandle }) {
 }
 
 function AddEntry() {
-    const { currentFolderHandle: parentHandle } = useContext(CurFolderContext);
-    const now = new Date();
+    const { showFolderView, currentFolderHandle } = useContext(CurFolderContext);
     const actions = [
         {
             icon: <InsertDriveFileIcon />,
             name: "new file",
-            handler: () => {
-                addNewFile(parentHandle, "new_file_" + now.YYYYMMDDHHMMSS());
+            handler: async () => {
+                await addNewFile(currentFolderHandle, "new_file_" + dateString());
+                await showFolderView(currentFolderHandle);
             },
         },
         {
             icon: <FolderIcon />,
             name: "new folder",
-            handler: () => {
-                addNewFolder(parentHandle, "new_folder_" + now.YYYYMMDDHHMMSS());
+            handler: async () => {
+                addNewFolder(currentFolderHandle, "new_folder_" + dateString());
+                await showFolderView(currentFolderHandle);
             },
         },
     ];
@@ -236,7 +230,12 @@ function AddEntry() {
             icon={<SpeedDialIcon />}
         >
             {actions.map((action) => (
-                <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} />
+                <SpeedDialAction
+                    key={action.name}
+                    icon={action.icon}
+                    tooltipTitle={action.name}
+                    onClick={action.handler}
+                />
             ))}
         </SpeedDial>
     );
@@ -247,36 +246,46 @@ function AddEntry() {
 const CurFolderContext = createContext();
 const DragContext = createContext();
 
-function FolderView({ path2FolderHandles, onFileClick }) {
-    const [currentFolderHandle, setCurrentFolderHandle] = useState();
+function FolderView({ rootFolder, onFileClick }) {
+    const [currentFolderHandle, setCurrentFolderHandle] = useState(rootFolder);
     const [entryOnDrag, setEntryOnDrag] = useState();
-    const [path, setPath] = useState([]);
+    const [path, setPath] = useState([rootFolder]);
     const [content, setContent] = useState([]);
     useEffect(() => {
         async function showRoot() {
-            const root = await path2FolderHandles("");
-            await showFolderView(root);
+            await showFolderView(currentFolderHandle);
         }
         showRoot();
     }, []);
     async function showFolderView(folderHandle) {
+        // set context
         setCurrentFolderHandle(folderHandle);
+        // set content
         setContent(await getFolderContent(folderHandle));
-        if (folderHandle in path) {
-            //TODO
-            //set path to until folderHandle
-        } else {
-            setPath((curPath) => {
-                [...path, folderHandle];
-            });
+        // set path
+        // if folderHandle in path, cut what ever behind it
+        for (var i = 0; i < path.length; i++) {
+            console.log(i);
+            if (folderHandle.isSameEntry(path[i])) {
+                setPath((curPath) => {
+                    return curPath.slice(0, i + 1);
+                });
+                return;
+            }
         }
-        console.log(folderHandle.name);
+        // else, append folderHandle at the back
+
+        console.log("-----------------");
+        setPath((curPath) => {
+            return [...curPath, folderHandle];
+        });
     }
-    function handleDrop(targetFolder) {
+    async function handleDrop(targetFolder) {
         if (targetFolder.isSameEntry(entryOnDrag)) {
             return;
         }
-        moveEntry(currentFolderHandle, entryOnDrag, targetFolder);
+        await moveEntry(currentFolderHandle, entryOnDrag, targetFolder);
+        await showFolderView(currentFolderHandle);
     }
     return (
         <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView }}>
