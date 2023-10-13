@@ -286,6 +286,9 @@ function FolderView({ rootFolder, onFileClick }) {
         if (await targetFolder.isSameEntry(entryOnDrag)) {
             return;
         }
+        if (await targetFolder.isSameEntry(currentFolderHandle)) {
+            return;
+        }
         await moveEntry(currentFolderHandle, entryOnDrag, targetFolder);
         await showFolderView(currentFolderHandle);
     }
