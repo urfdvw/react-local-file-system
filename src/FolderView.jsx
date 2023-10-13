@@ -14,6 +14,8 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
     isFolder,
     getFolderContent,
@@ -124,7 +126,7 @@ function ApplyDrop({ children, onDropHandler }) {
 // Entry
 
 function ContentEntry({ entryHandle }) {
-    const { currentFolderHandle, onFileClick, showFolderView } = useContext(CurFolderContext);
+    const { currentFolderHandle, onFileClick, showFolderView, setIsLoading } = useContext(CurFolderContext);
     const { setEntryOnDrag, handleDrop } = useContext(DragContext);
     // handler
     const items = [
@@ -136,24 +138,30 @@ function ContentEntry({ entryHandle }) {
                 if (!newName) {
                     return;
                 }
+                setIsLoading(true);
                 await renameEntry(currentFolderHandle, entryHandle, newName);
                 await showFolderView(currentFolderHandle);
+                setIsLoading(false);
             },
         },
         {
             name: "duplicate",
             handler: async (event) => {
                 console.log("ContentEntry duplicate handler called", event);
+                setIsLoading(true);
                 await copyEntry(entryHandle, currentFolderHandle, entryHandle.name + "_copy_" + dateString());
                 await showFolderView(currentFolderHandle);
+                setIsLoading(false);
             },
         },
         {
             name: "remove",
             handler: async (event) => {
                 console.log("ContentEntry remove handler called", event);
+                setIsLoading(true);
                 await removeEntry(currentFolderHandle, entryHandle);
                 await showFolderView(currentFolderHandle);
+                setIsLoading(false);
             },
         },
     ];
@@ -207,15 +215,17 @@ function PathEntry({ entryHandle }) {
 }
 
 function AddEntry() {
-    const { showFolderView, currentFolderHandle } = useContext(CurFolderContext);
+    const { showFolderView, currentFolderHandle, setIsLoading } = useContext(CurFolderContext);
     const actions = [
         {
             icon: <InsertDriveFileIcon />,
             name: "new file",
             handler: async (event) => {
                 console.log("AddEntry new file called", event);
+                setIsLoading(true);
                 await addNewFile(currentFolderHandle, "new_file_" + dateString());
                 await showFolderView(currentFolderHandle);
+                setIsLoading(false);
             },
         },
         {
@@ -223,8 +233,10 @@ function AddEntry() {
             name: "new folder",
             handler: async (event) => {
                 console.log("AddEntry new folder called", event);
-                addNewFolder(currentFolderHandle, "new_folder_" + dateString());
+                setIsLoading(true);
+                await addNewFolder(currentFolderHandle, "new_folder_" + dateString());
                 await showFolderView(currentFolderHandle);
+                setIsLoading(false);
             },
         },
     ];
@@ -256,6 +268,7 @@ function FolderView({ rootFolder, onFileClick }) {
     const [entryOnDrag, setEntryOnDrag] = useState();
     const [path, setPath] = useState([rootFolder]);
     const [content, setContent] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         async function showRoot() {
             await showFolderView(currentFolderHandle);
@@ -289,11 +302,13 @@ function FolderView({ rootFolder, onFileClick }) {
         if (await targetFolder.isSameEntry(currentFolderHandle)) {
             return;
         }
+        setIsLoading(true);
         await moveEntry(currentFolderHandle, entryOnDrag, targetFolder);
         await showFolderView(currentFolderHandle);
+        setIsLoading(false);
     }
     return (
-        <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView }}>
+        <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView, setIsLoading }}>
             <DragContext.Provider value={{ setEntryOnDrag, handleDrop }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     {path.map((entry) => (
@@ -326,6 +341,9 @@ function FolderView({ rootFolder, onFileClick }) {
                         ))}
                 </List>
                 <AddEntry />
+                <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </DragContext.Provider>
         </CurFolderContext.Provider>
     );
