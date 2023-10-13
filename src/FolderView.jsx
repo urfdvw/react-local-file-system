@@ -197,7 +197,7 @@ function PathEntry({ entryHandle }) {
     return (
         <ApplyDrop onDropHandler={onDropHandler}>
             <Button size="small" onClick={onClickHandler} sx={{ minWidth: 10, textTransform: "none" }}>
-                {entryHandle.name ? entryHandle.name : "ROOT"}
+                {entryHandle.name === "\\" ? "ROOT" : entryHandle.name}
             </Button>
         </ApplyDrop>
     );
