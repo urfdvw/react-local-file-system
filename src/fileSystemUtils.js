@@ -62,7 +62,7 @@ export async function getFolderTree(folderHandle) {
         out.push({
             parent: folderHandle,
             handle: entry,
-            children: (isFolder(entry)) ? await getFolderTree(entry) : null,
+            children: isFolder(entry) ? await getFolderTree(entry) : null,
         });
     }
     return out;
@@ -132,8 +132,18 @@ export async function removeEntry(parentHandle, entryHandle) {
 }
 
 export async function cleanFolder(parentHandle) {
-    for (const entry of await getFolderContent(parentHandle)) {
-        await removeEntry(parentHandle, entry);
+    const folder_content = await getFolderContent(parentHandle);
+    folder_content.sort((a, b) => {
+        if (a.name.startsWith(".")) {
+            return -1;
+        }
+        if (b.name.startsWith(".")) {
+            return 1;
+        }
+        return 0;
+    });
+    for (var i = 0; i < folder_content.length; i++) {
+        await removeEntry(parentHandle, folder_content[i]);
     }
 }
 

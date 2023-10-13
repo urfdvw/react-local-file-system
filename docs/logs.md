@@ -43,3 +43,8 @@
 - Prepare for the folder view Component
 - Use basic routing via "window.location.pathname"
 - changed the connection message to include "connection lost info"
+
+# error happens when removing non empty folder
+- only happens on the micro controller drive
+- mostly because mac file '._*'
+- solution, remove the . files first before remove the rest
