@@ -93,9 +93,9 @@ function ApplyContextMenu({ children, items }) {
                         return (
                             <MenuItem
                                 key={crypto.randomUUID()}
-                                onClick={() => {
+                                onClick={(event) => {
                                     handleClose();
-                                    item.handler();
+                                    item.handler(event);
                                 }}
                             >
                                 {item.name}
@@ -132,7 +132,10 @@ function ContentEntry({ entryHandle }) {
             name: "rename",
             handler: async (event) => {
                 console.log("ContentEntry rename handler called", event);
-                const newName = prompt("new name", entryHandle.name);
+                const newName = prompt("new name", "");
+                if (!newName) {
+                    return;
+                }
                 await renameEntry(currentFolderHandle, entryHandle, newName);
                 await showFolderView(currentFolderHandle);
             },
@@ -311,6 +314,9 @@ function FolderView({ rootFolder, onFileClick }) {
                                 return 1;
                             }
                             return 0;
+                        })
+                        .filter((entry) => {
+                            return !entry.name.startsWith(".");
                         })
                         .map((entry) => (
                             <ContentEntry entryHandle={entry} key={crypto.randomUUID()} />
