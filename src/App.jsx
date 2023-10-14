@@ -2,14 +2,25 @@ import Test from "./Test";
 import FolderView from "./FolderView";
 import useFileSystem from "./useFileSystem";
 import { getFileText } from "./fileSystemUtils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function App() {
+    const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
+    const [rootFolder, setRootFolder] = useState();
+    useEffect(() => {
+        async function setRoot() {
+            const root = await path2FolderHandles("");
+            setRootFolder(root);
+        }
+        if (!rootFolder) {
+            setRoot();
+        }
+    }, [directoryReady]);
+
+    // route
     if (window.location.pathname === "/test") {
         return <Test />;
     }
-    const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
-    const [rootFolder, setRootFolder] = useState();
 
     async function onFileClick(fileHandle) {
         console.log("file content of", fileHandle.name, ":", await getFileText(fileHandle));
@@ -19,17 +30,9 @@ export default function App() {
         await openDirectory();
     }
 
-    async function setRoot() {
-        // TODO: make this part of the open action
-        const root = await path2FolderHandles("");
-        console.log(root);
-        setRootFolder(root);
-    }
-
     return (
         <>
             <button onClick={onOpenHandler}>Open Dir</button>
-            <button onClick={setRoot}>Set root</button>
             <br />
             {directoryReady && rootFolder ? (
                 <FolderView rootFolder={rootFolder} onFileClick={onFileClick} />
