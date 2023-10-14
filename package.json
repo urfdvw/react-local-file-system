@@ -1,5 +1,5 @@
 {
-  "name": "usefilesystem",
+  "name": "react-local-file-system",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +8,8 @@
     "build": "vite build",
     "deploy": "gh-pages -d dist",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "echo \"No test specified\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -16,6 +17,7 @@
     "@mui/icons-material": "^5.14.13",
     "@mui/material": "^5.14.13",
     "gh-pages": "^6.0.0",
+    "np": "^8.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
