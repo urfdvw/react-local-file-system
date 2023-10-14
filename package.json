@@ -35,5 +35,11 @@
   "engines": {
     "npm": ">=9.0.0",
     "node": ">= 18.0.0"
+  },
+  "exports": {
+    "./fileSystemUtils": "./src/fileSystemUtils.js",
+    "./FolderView": "./src/FolderView.jsx",
+    "./useFileSystem": "./src/useFileSystem.js",
+    "./package.json": "./package.json"
   }
 }
