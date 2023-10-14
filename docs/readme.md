@@ -25,6 +25,25 @@ Over head file
 
 # Features that need https
 - remove file/folder
+    - actually this feature can be used with stand alone file build
+    - not sure why it is different from the document
+
+# alert level
+- throw error
+    - only when this stops the whole UI from working
+- console.error
+    - when some UI feature code cannot finish as expected
+- confirm
+    - when the operation is not revertible
+    - situations
+        - delete
+- alert
+    - when the operation is going to change the data as a side effect
+    - should stop the code from going forward
+    - situations
+        - move file
+        - rename file
+
 
 # Note
 

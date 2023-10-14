@@ -86,6 +86,10 @@ export async function checkFolderExists(parentHandle, folderName) {
     }
 }
 
+export async function checkEntryExists(parentHandle, entryName) {
+    return (await checkFileExists(parentHandle, entryName)) || (await checkFolderExists(parentHandle, entryName));
+}
+
 // Create -------------------------------------
 
 export async function addNewFolder(parentHandle, newFolderName) {

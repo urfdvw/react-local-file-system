@@ -19,8 +19,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
     isFolder,
     getFolderContent,
-    checkFileExists,
-    checkFolderExists,
+    checkEntryExists,
     addNewFolder,
     addNewFile,
     removeEntry,
@@ -138,6 +137,10 @@ function ContentEntry({ entryHandle }) {
                 if (!newName) {
                     return;
                 }
+                if (await checkEntryExists(currentFolderHandle, newName)) {
+                    alert('"' + newName + '" is an existing name.\nPlease try again with another name.');
+                    return;
+                }
                 setIsLoading(true);
                 await renameEntry(currentFolderHandle, entryHandle, newName);
                 await showFolderView(currentFolderHandle);
@@ -158,6 +161,9 @@ function ContentEntry({ entryHandle }) {
             name: "remove",
             handler: async (event) => {
                 console.log("ContentEntry remove handler called", event);
+                if (!confirm('Are you sure to remove "' + entryHandle.name + '"?\nThis is not revertible!')) {
+                    return;
+                }
                 setIsLoading(true);
                 await removeEntry(currentFolderHandle, entryHandle);
                 await showFolderView(currentFolderHandle);
@@ -300,6 +306,10 @@ function FolderView({ rootFolder, onFileClick }) {
             return;
         }
         if (await targetFolder.isSameEntry(currentFolderHandle)) {
+            return;
+        }
+        if (await checkEntryExists(currentFolderHandle, entryOnDrag.name)) {
+            alert('"' + entryOnDrag.name + '" conflicts with another name in the target folder.');
             return;
         }
         setIsLoading(true);

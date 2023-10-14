@@ -48,3 +48,5 @@
 - only happens on the micro controller drive
 - mostly because mac file '._*'
 - solution, remove the . files first before remove the rest
+
+# 
