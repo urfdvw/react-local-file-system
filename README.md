@@ -4,7 +4,8 @@ This package contains tools for your react front end web app to access local fil
 This package only supports Chrome and Chromium-based browsers.
 
 ## Demo
-https://urfdvw.github.io/useFileSystem/
+https://urfdvw.github.io/react-local-file-system/
+
 Note: File read results are in the debug console
 
 ## Contents
