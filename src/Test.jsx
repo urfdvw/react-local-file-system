@@ -6,7 +6,7 @@ import {
     isEntryHealthy,
     getFolderContent,
     getFolderTree,
-    checkFileExists,
+    checkEntryExists,
     addNewFolder,
     addNewFile,
     addRandomFolderTree,
@@ -88,8 +88,8 @@ export default function Test() {
                     console.log("from test_file: ", isFolder(testFileHandle));
 
                     console.log("=== Test checking file existence ===");
-                    console.log("should be true", await checkFileExists(rootHandle, testFileName));
-                    console.log("should be false", await checkFileExists(rootHandle, "non_existing_" + testFileName));
+                    console.log("should be true", await checkEntryExists(rootHandle, testFileName));
+                    console.log("should be false", await checkEntryExists(rootHandle, "non_existing_" + testFileName));
                 }}
             >
                 Run Tests

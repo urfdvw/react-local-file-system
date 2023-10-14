@@ -1,44 +1,26 @@
-import Test from "./Test";
-import FolderView from "./FolderView";
-import useFileSystem from "./useFileSystem";
-import { getFileText } from "./fileSystemUtils";
-import { useEffect, useState } from "react";
+import FolderView from "./FolderView"; // the FolderView component
+import useFileSystem from "./useFileSystem"; // the hook handling connections to the directory
+import { getFileText } from "./fileSystemUtils"; // file system api wrappers for manipulating files
+import Test from "./Test"; // testing page
 
 export default function App() {
-    const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
-    const [rootFolder, setRootFolder] = useState();
-    useEffect(() => {
-        async function setRoot() {
-            const root = await path2FolderHandles("");
-            setRootFolder(root);
-        }
-        if (!rootFolder) {
-            setRoot();
-        }
-    }, [directoryReady]);
-
-    // route
+    // get folder handler and status with useFileSystem hook
+    const { openDirectory, directoryReady, statusText, rootDirHandle } = useFileSystem();
+    // route to test page
     if (window.location.pathname === "/test") {
         return <Test />;
     }
-
+    // example onFileClick handler
     async function onFileClick(fileHandle) {
         console.log("file content of", fileHandle.name, ":", await getFileText(fileHandle));
     }
-
-    async function onOpenHandler() {
-        await openDirectory();
-    }
-
-    return (
+    // Show FolderView component only when its ready
+    return directoryReady ? (
+        <FolderView rootFolder={rootDirHandle} onFileClick={onFileClick} />
+    ) : (
         <>
-            <button onClick={onOpenHandler}>Open Dir</button>
-            <br />
-            {directoryReady && rootFolder ? (
-                <FolderView rootFolder={rootFolder} onFileClick={onFileClick} />
-            ) : (
-                statusText
-            )}
+            <button onClick={openDirectory}>Open Dir</button>
+            <p>{statusText}</p>
         </>
     );
 }

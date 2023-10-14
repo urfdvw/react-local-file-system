@@ -73,6 +73,7 @@ const useFileSystem = () => {
         openDirectory,
         directoryReady,
         statusText,
+        rootDirHandle,
         path2FolderHandles,
     };
 };
