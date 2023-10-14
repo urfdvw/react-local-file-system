@@ -308,7 +308,7 @@ function FolderView({ rootFolder, onFileClick }) {
         if (await targetFolder.isSameEntry(currentFolderHandle)) {
             return;
         }
-        if (await checkEntryExists(currentFolderHandle, entryOnDrag.name)) {
+        if (await checkEntryExists(targetFolder, entryOnDrag.name)) {
             alert('"' + entryOnDrag.name + '" conflicts with another name in the target folder.');
             return;
         }
