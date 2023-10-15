@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "echo \"No test specified\""
   },
-  "dependencies": {
+  "peerDependencies": {
     "@mui/icons-material": "^5.14.13",
     "@mui/material": "^5.14.13",
     "react": "^18.2.0",
