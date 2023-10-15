@@ -207,3 +207,8 @@ export async function moveEntry(parentHandle, entryHandle, targetFolderHandle) {
     await removeEntry(parentHandle, entryHandle);
     return newEntryHandle;
 }
+
+// dummy function
+export default function dummy() {
+    return "This is a dummy default function";
+}
