@@ -1,6 +1,6 @@
-import FolderView from "./FolderView"; // the FolderView component
-import useFileSystem from "./useFileSystem"; // the hook handling connections to the directory
-import { getFileText } from "./fileSystemUtils"; // file system api wrappers for manipulating files
+import FolderView from "./lib/FolderView"; // the FolderView component
+import useFileSystem from "./lib/useFileSystem"; // the hook handling connections to the directory
+import { getFileText } from "./lib/fileSystemUtils"; // file system api wrappers for manipulating files
 import Test from "./Test"; // testing page
 
 export default function App() {

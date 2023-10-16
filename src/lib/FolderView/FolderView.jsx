@@ -26,7 +26,7 @@ import {
     copyEntry,
     renameEntry,
     moveEntry,
-} from "./fileSystemUtils";
+} from "../fileSystemUtils";
 
 //util
 function dateString() {

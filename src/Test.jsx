@@ -1,4 +1,4 @@
-import useFileSystem from "./useFileSystem";
+import useFileSystem from "./lib/useFileSystem";
 import {
     writeFileText,
     getFileText,
@@ -16,7 +16,7 @@ import {
     backupFolder,
     renameEntry,
     moveEntry,
-} from "./fileSystemUtils";
+} from "./lib/fileSystemUtils";
 
 export default function Test() {
     const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();

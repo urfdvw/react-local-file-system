@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { isEntryHealthy } from "./fileSystemUtils";
+import { isEntryHealthy } from "../fileSystemUtils";
 
 const useFileSystem = () => {
     const [rootDirHandle, setRootDirHandle] = useState(null);

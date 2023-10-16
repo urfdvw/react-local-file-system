@@ -35,9 +35,9 @@
     "node": ">= 18.0.0"
   },
   "exports": {
-    "./fileSystemUtils": "./src/fileSystemUtils.js",
-    "./FolderView": "./src/FolderView.jsx",
-    "./useFileSystem": "./src/useFileSystem.js",
+    "./fileSystemUtils": "./src/lib/fileSystemUtils/index.mjs",
+    "./FolderView": "./src/lib/FolderView/index.mjs",
+    "./useFileSystem": "./src/lib/useFileSystem/index.mjs",
     "./package.json": "./package.json"
   }
 }
