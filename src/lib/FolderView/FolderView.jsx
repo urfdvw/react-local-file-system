@@ -26,7 +26,7 @@ import {
     copyEntry,
     renameEntry,
     moveEntry,
-} from "../fileSystemUtils";
+} from "react-local-file-system/fileSystemUtils";
 
 //util
 function dateString() {
