@@ -40,7 +40,7 @@
         "File System API"
     ],
     "author": "River Wang",
-    "license": "AGPL-3.0",
+    "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/urfdvw/react-local-file-system/issues"
     },
