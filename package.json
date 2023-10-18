@@ -27,17 +27,22 @@
         "eslint-plugin-react-refresh": "^0.4.3",
         "gh-pages": "^6.0.0",
         "np": "^8.0.4",
-        "vite": "^4.4.5",
-        "vite-plugin-singlefile": "^0.13.5"
+        "vite": "^4.4.5"
     },
-    "engines": {
-        "npm": ">=9.0.0",
-        "node": ">= 18.0.0"
+    "description": "Tools for your react front end web app to access local files via File System API.",
+    "main": "vite.config.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/urfdvw/react-local-file-system.git"
     },
-    "exports": {
-        "./fileSystemUtils": "./src/lib/fileSystemUtils/index.mjs",
-        "./FolderView": "./src/lib/FolderView/index.mjs",
-        "./useFileSystem": "./src/lib/useFileSystem/index.mjs",
-        "./package.json": "./package.json"
-    }
+    "keywords": [
+        "react",
+        "File System API"
+    ],
+    "author": "River Wang",
+    "license": "AGPL-3.0",
+    "bugs": {
+        "url": "https://github.com/urfdvw/react-local-file-system/issues"
+    },
+    "homepage": "https://github.com/urfdvw/react-local-file-system#readme"
 }
