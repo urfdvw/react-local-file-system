@@ -27,8 +27,12 @@
         "eslint-plugin-react-refresh": "^0.4.3",
         "vite": "^4.4.5"
     },
-    "description": "Tools for your react front end web app to access local files via File System API.",
+    "engines": {
+        "npm": ">=9.0.0",
+        "node": ">= 18.0.0"
+    },
     "main": "vite.config.js",
+    "description": "Tools for your react front end web app to access local files via File System API.",
     "repository": {
         "type": "git",
         "url": "https://github.com/urfdvw/react-local-file-system.git"
