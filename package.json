@@ -25,8 +25,6 @@
         "eslint-plugin-react": "^7.32.2",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.4.3",
-        "gh-pages": "^6.0.0",
-        "np": "^8.0.4",
         "vite": "^4.4.5"
     },
     "description": "Tools for your react front end web app to access local files via File System API.",

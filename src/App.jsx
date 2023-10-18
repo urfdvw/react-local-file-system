@@ -1,5 +1,4 @@
-import FolderView from "./react-local-file-system";
-import { useFileSystem, getFileText } from "./react-local-file-system";
+import FolderView, { useFileSystem, getFileText } from "./react-local-file-system";
 import Test from "./Test"; // testing page
 
 export default function App() {
