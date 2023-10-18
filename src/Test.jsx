@@ -1,5 +1,5 @@
-import useFileSystem from "./lib/useFileSystem";
 import {
+    useFileSystem,
     writeFileText,
     getFileText,
     isFolder,
@@ -16,7 +16,7 @@ import {
     backupFolder,
     renameEntry,
     moveEntry,
-} from "./lib/fileSystemUtils";
+} from "./react-local-file-system";
 
 export default function Test() {
     const { openDirectory, directoryReady, statusText, path2FolderHandles } = useFileSystem();
