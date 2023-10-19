@@ -1,7 +1,7 @@
 {
     "name": "react-local-file-system",
     "private": false,
-    "version": "1.0.8",
+    "version": "1.0.10",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -31,7 +31,14 @@
         "npm": ">=9.0.0",
         "node": ">= 18.0.0"
     },
-    "main": "vite.config.js",
+    "main": "./dist/react-local-file-system.umd.js",
+    "module": "./dist/react-local-file-system.es.js",
+    "exports": {
+        ".": {
+            "import": "./dist/react-local-file-system.es.js",
+            "require": "./dist/react-local-file-system.umd.js"
+        }
+    },
     "description": "Tools for your react front end web app to access local files via File System API.",
     "repository": {
         "type": "git",
