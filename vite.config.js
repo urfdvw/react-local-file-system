@@ -17,6 +17,7 @@ export default defineConfig({
                 },
             },
         },
+        outDir: "./release",
     },
     plugins: [react()],
 });
