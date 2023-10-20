@@ -18,9 +18,9 @@ export default function App() {
             style={{
                 position: "fixed",
                 top: 100,
-                left: 100,
+                left: 200,
                 height: 300,
-                width: 500,
+                width: 400,
                 borderColor: "red",
                 borderWidth: 10,
                 borderStyle: "dashed",
