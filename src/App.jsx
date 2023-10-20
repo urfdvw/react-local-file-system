@@ -13,12 +13,16 @@ export default function App() {
         console.log("file content of", fileHandle.name, ":", await getFileText(fileHandle));
     }
     // Show FolderView component only when its ready
-    return directoryReady ? (
-        <FolderView rootFolder={rootDirHandle} onFileClick={onFileClick} />
-    ) : (
-        <>
-            <button onClick={openDirectory}>Open Dir</button>
-            <p>{statusText}</p>
-        </>
+    return (
+        <div style={{ position: "fixed", top: 100, left: 100, height: 300, width: 500}}>
+            {directoryReady ? (
+                <FolderView rootFolder={rootDirHandle} onFileClick={onFileClick} />
+            ) : (
+                <>
+                    <button onClick={openDirectory}>Open Dir</button>
+                    <p>{statusText}</p>
+                </>
+            )}
+        </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useEffect } from "react";
+import { useState, createContext, useContext, useEffect, useRef } from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Button } from "@mui/material";
 import List from "@mui/material/List";
@@ -16,6 +16,10 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+
+// *****************************************
+// COMPONENTS
+// *****************************************
 
 //util
 function dateString() {
@@ -238,7 +242,7 @@ function AddEntry() {
     return (
         <SpeedDial
             ariaLabel="SpeedDial basic example"
-            sx={{ position: "fixed", bottom: 16, right: 16 }}
+            sx={{ position: "sticky", bottom: 16, alignContent: "left" }}
             icon={<SpeedDialIcon />}
         >
             {actions.map((action) => (
@@ -270,6 +274,8 @@ export default function FolderView({ rootFolder, onFileClick }) {
         }
         showRoot();
     }, []);
+    const refContainer = useRef();
+    console.log(refContainer);
     async function showFolderView(folderHandle) {
         // set context
         setCurrentFolderHandle(folderHandle);
@@ -307,50 +313,50 @@ export default function FolderView({ rootFolder, onFileClick }) {
         setIsLoading(false);
     }
     return (
-        <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView, setIsLoading }}>
-            <DragContext.Provider value={{ setEntryOnDrag, handleDrop }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    {path.map((entry) => (
-                        <PathEntry entryHandle={entry} key={crypto.randomUUID()} />
-                    ))}
-                </Breadcrumbs>
-                <Divider />
-                <List>
-                    {content
-                        .sort((a, b) => {
-                            if (isFolder(a) && !isFolder(b)) {
-                                return -1;
-                            }
-                            if (!isFolder(a) && isFolder(b)) {
-                                return 1;
-                            }
-                            if (a.name < b.name) {
-                                return -1;
-                            }
-                            if (a.name > b.name) {
-                                return 1;
-                            }
-                            return 0;
-                        })
-                        .filter((entry) => {
-                            return !entry.name.startsWith(".");
-                        })
-                        .map((entry) => (
-                            <ContentEntry entryHandle={entry} key={crypto.randomUUID()} />
-                        ))}
-                </List>
-                <AddEntry />
-                <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
-            </DragContext.Provider>
-        </CurFolderContext.Provider>
+        <div ref={refContainer} style={{ height: "100%", width: "100%", overflow: "scroll" }}>
+            <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView, setIsLoading }}>
+                <DragContext.Provider value={{ setEntryOnDrag, handleDrop }}>
+                    <div style={{ position: "sticky", top: 0, backgroundColor: " rgba(255,255,255,1)" }}>
+                        <Breadcrumbs aria-label="breadcrumb">
+                            {path.map((entry) => (
+                                <PathEntry entryHandle={entry} key={crypto.randomUUID()} />
+                            ))}
+                        </Breadcrumbs>
+                        <Divider />
+                    </div>
+                    <List>
+                        {content
+                            .sort((a, b) => {
+                                if (isFolder(a) && !isFolder(b)) {
+                                    return -1;
+                                }
+                                if (!isFolder(a) && isFolder(b)) {
+                                    return 1;
+                                }
+                                if (a.name < b.name) {
+                                    return -1;
+                                }
+                                if (a.name > b.name) {
+                                    return 1;
+                                }
+                                return 0;
+                            })
+                            .filter((entry) => {
+                                return !entry.name.startsWith(".");
+                            })
+                            .map((entry) => (
+                                <ContentEntry entryHandle={entry} key={crypto.randomUUID()} />
+                            ))}
+                    </List>
+                    <AddEntry />
+                    <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                </DragContext.Provider>
+            </CurFolderContext.Provider>
+        </div>
     );
 }
-
-// *****************************************
-// COMPONENTS
-// *****************************************
 
 // *****************************************
 // HOOK
