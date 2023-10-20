@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useEffect, useRef } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Button } from "@mui/material";
 import List from "@mui/material/List";
@@ -213,21 +213,8 @@ function PathEntry({ entryHandle }) {
     );
 }
 
-function AddEntry({ top, left }) {
+function AddEntry() {
     const { showFolderView, currentFolderHandle, setIsLoading } = useContext(CurFolderContext);
-
-    // for positioning
-    const refSpeedDial = useRef();
-    let height;
-    let width;
-    try {
-        height = refSpeedDial.current.offsetHeight;
-        width = refSpeedDial.current.offsetWidth;
-    } catch {
-        height = 0;
-        width = 0;
-    }
-
     const actions = [
         {
             icon: <InsertDriveFileIcon />,
@@ -255,9 +242,8 @@ function AddEntry({ top, left }) {
     return (
         <SpeedDial
             ariaLabel="SpeedDial basic example"
-            sx={{ position: "fixed", top: top - height, left: left - width }}
+            sx={{ position: "absolute", bottom: 16, right: 16 }}
             icon={<SpeedDialIcon />}
-            ref={refSpeedDial}
         >
             {actions.map((action) => (
                 <SpeedDialAction
@@ -288,19 +274,6 @@ export default function FolderView({ rootFolder, onFileClick }) {
         }
         showRoot();
     }, []);
-
-    // for positioning
-    const refContainer = useRef();
-    let left;
-    let top;
-    try {
-        left = refContainer.current.parentElement.offsetLeft + refContainer.current.parentElement.offsetWidth;
-        top = refContainer.current.parentElement.offsetTop + refContainer.current.parentElement.offsetHeight;
-    } catch {
-        left = 0;
-        top = 0;
-    }
-
     async function showFolderView(folderHandle) {
         // set context
         setCurrentFolderHandle(folderHandle);
@@ -339,7 +312,6 @@ export default function FolderView({ rootFolder, onFileClick }) {
     }
     return (
         <div
-            ref={refContainer}
             style={{
                 height: "100%",
                 width: "100%",
@@ -401,7 +373,7 @@ export default function FolderView({ rootFolder, onFileClick }) {
                 </CurFolderContext.Provider>
             </div>
             <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView, setIsLoading }}>
-                <AddEntry top={top - 20} left={left - 20} />
+                <AddEntry />
             </CurFolderContext.Provider>
             <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
                 <CircularProgress color="inherit" />
