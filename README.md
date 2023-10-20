@@ -3,6 +3,11 @@
 This package contains tools for your react front end web app to access local files via File System API.
 This package only supports Chrome and Chromium-based browsers.
 
+## Install
+```
+npm i react-local-file-system
+```
+
 ## Quick setup
 
 The minimal setup to use this package is to utilize the `FolderView` component for general file operations and to create a custom handler function, `onFileClick`, to manage any file click actions. Specifically, the `FolderView` component is used in the UI to access files, accepting a prop named `onFileClick` that takes a single parameter: `fileHandle`. The `onFileClick` function is triggered when a file is clicked in the UI, with `fileHandle` being the file handle of the clicked file.
@@ -32,7 +37,10 @@ export default function App() {
 ```
 
 ## Demo
+The live demo of the example above is here:
 https://urfdvw.github.io/react-local-file-system/
+
+For the code of the live demo, please see the `demo` branch
 
 ## Contents
 
