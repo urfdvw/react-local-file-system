@@ -1,7 +1,7 @@
 {
     "name": "react-local-file-system",
     "private": false,
-    "version": "1.0.15",
+    "version": "1.0.16",
     "type": "module",
     "scripts": {
         "dev": "vite",

@@ -213,8 +213,7 @@ function PathEntry({ entryHandle }) {
     );
 }
 
-function AddEntry() {
-    const { showFolderView, currentFolderHandle, setIsLoading } = useContext(CurFolderContext);
+function AddEntry({ showFolderView, currentFolderHandle, setIsLoading }) {
     const actions = [
         {
             icon: <InsertDriveFileIcon />,
@@ -340,7 +339,7 @@ export default function FolderView({ rootFolder, onFileClick }) {
             <div
                 style={{
                     flexGrow: 1,
-                    overflow: "scroll",
+                    overflow: "auto",
                 }}
             >
                 <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView, setIsLoading }}>
@@ -372,9 +371,11 @@ export default function FolderView({ rootFolder, onFileClick }) {
                     </DragContext.Provider>
                 </CurFolderContext.Provider>
             </div>
-            <CurFolderContext.Provider value={{ currentFolderHandle, onFileClick, showFolderView, setIsLoading }}>
-                <AddEntry />
-            </CurFolderContext.Provider>
+            <AddEntry
+                showFolderView={showFolderView}
+                currentFolderHandle={currentFolderHandle}
+                setIsLoading={setIsLoading}
+            />
             <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
                 <CircularProgress color="inherit" />
             </Backdrop>
