@@ -269,10 +269,13 @@ export default function FolderView({ rootFolder, onFileClick }) {
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         async function showRoot() {
-            await showFolderView(currentFolderHandle);
+            setCurrentFolderHandle(rootFolder);
+            setContent(await getFolderContent(rootFolder));
+            setPath([rootFolder]);
         }
         showRoot();
-    }, []);
+    }, [rootFolder]);
+
     async function showFolderView(folderHandle) {
         // set context
         setCurrentFolderHandle(folderHandle);

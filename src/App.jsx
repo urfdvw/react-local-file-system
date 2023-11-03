@@ -14,26 +14,23 @@ export default function App() {
     }
     // Show FolderView component only when its ready
     return (
-        <div
-            style={{
-                position: "fixed",
-                top: 100,
-                left: 200,
-                height: 300,
-                width: 400,
-                borderColor: "red",
-                borderWidth: 10,
-                borderStyle: "dashed",
-            }}
-        >
-            {directoryReady ? (
-                <FolderView rootFolder={rootDirHandle} onFileClick={onFileClick} />
-            ) : (
-                <>
-                    <button onClick={openDirectory}>Open Dir</button>
-                    <p>{statusText}</p>
-                </>
-            )}
-        </div>
+        <>
+            <button onClick={openDirectory}>Open Dir</button>
+            <p>{statusText}</p>
+            <div
+                style={{
+                    position: "fixed",
+                    top: 100,
+                    left: 200,
+                    height: 300,
+                    width: 400,
+                    borderColor: "red",
+                    borderWidth: 10,
+                    borderStyle: "dashed",
+                }}
+            >
+                {directoryReady ? <FolderView rootFolder={rootDirHandle} onFileClick={onFileClick} /> : <></>}
+            </div>
+        </>
     );
 }
