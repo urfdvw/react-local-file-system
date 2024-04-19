@@ -76,3 +76,11 @@ functions
     - `writeFileText(fileHandle, text) -> void`: write text to a file
     - `getFileText(fileHandle) -> string`: read text from a file
 - folder level (docs coming, please see source code for help at the moment)
+
+## PeerDependency
+```
+"@mui/icons-material": "^5.14.13",
+"@mui/material": "^5.14.13",
+"react": "^18.2.0",
+"react-dom": "^18.2.0"
+```
